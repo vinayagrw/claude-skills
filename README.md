@@ -7,7 +7,7 @@ that turn a one-line idea — or a dense design doc — into polished, editable 
 diagrams that explain themselves, SVGs that actually move, beautiful Markdown, and
 review-ready design records.
 
-![Skills](https://img.shields.io/badge/skills-5-1971c2?style=flat-square)
+![Skills](https://img.shields.io/badge/skills-6-1971c2?style=flat-square)
 ![For Claude Code](https://img.shields.io/badge/for-Claude%20Code-d97757?style=flat-square)
 ![License](https://img.shields.io/badge/license-Apache--2.0-2f9e44?style=flat-square)
 ![PRs welcome](https://img.shields.io/badge/PRs-welcome-9c36b5?style=flat-square)
@@ -37,6 +37,7 @@ flowchart LR
     subgraph Docs["📝 Make something written"]
         D["markdown-craft"]
         E["tdr-author"]
+        F["solution-design-explorer"]
     end
     idea(["an idea, a spec,<br/>or a doc"]) --> Visuals
     idea --> Docs
@@ -51,6 +52,7 @@ flowchart LR
 | 📐 **[drawio-creative-diagrams](drawio-creative-diagrams/SKILL.md)** | Polished, fully-editable **draw.io** `.drawio` files — gradient lanes, semantic colour, animated flow edges, HTML-table nodes | "diagram this architecture", "turn this spec into a picture", anything you'll keep editing in diagrams.net |
 | ✏️ **[excalidraw-creative-diagrams](excalidraw-creative-diagrams/SKILL.md)** | Hand-drawn **Excalidraw** `.excalidraw` scenes — sketchy charm, sticky-notes, frames, switchable sketch/clean mode, draw-on animation | "sketch this", "whiteboard this idea", a wireframe, a hand-drawn figure |
 | 📋 **[tdr-author](tdr-author/SKILL.md)** | Decision-first **Technical Design Records** — rationale, rejected alternatives, gap audit, Confluence-paste-safe ASCII | "write up the design for X", "document this decision", "a spec the team can review" |
+| 🧭 **[solution-design-explorer](solution-design-explorer/SKILL.md)** | Deep, research-backed **solution-architecture deep-dives** — surveys how the field solves it, multi-persona reasoning, pattern comparison, self red-team, SOTA refresh, a recommendation | "architect a solution for X", "how does the industry do this?", "find the top N approaches and recommend one" |
 
 > [!NOTE]
 > Each skill is self-contained: a `SKILL.md` playbook, a `references/` folder of deep-dive
@@ -58,7 +60,7 @@ flowchart LR
 
 ## 🚀 Quick start
 
-Install **all five** skills into your personal Claude Code skills folder, then start (or
+Install **all six** skills into your personal Claude Code skills folder, then start (or
 restart) Claude Code — they load automatically.
 
 <details open>
@@ -262,6 +264,26 @@ concrete sub-specs for the blockers. Produces dual output — a Mermaid master t
 GitHub and a **Confluence-paste-safe ASCII copy** — and lints the latter for paste safety.
 
 **Try:** *"write a TDR for choosing X over Y"* · *"document this decision for the team"* · *"turn this into a design doc"*
+
+</details>
+
+<details>
+<summary>🧭 <b>solution-design-explorer</b> — research-backed solution-architecture deep-dives</summary>
+
+<br/>
+
+Produces the kind of design deliverable you'd put in front of a review board or a client:
+it **surveys how the community actually solves the problem**, reasons through it with
+multiple expert **personas**, proposes an architecture with Mermaid diagrams, compares the
+viable **design patterns** in a matrix, **red-teams its own approach** to surface gaps, then
+refreshes against the last ~2 months of state of the art before landing a clear
+**recommendation** with honest scope.
+
+It works from a fixed document skeleton and a research playbook, so the output is rigorous
+rather than a vibe — and an optional pre-sales close makes the "why us" explicit when the
+audience is client-facing. Ships `scripts/validate_mermaid.py` to render-check every diagram.
+
+**Try:** *"architect a solution for X"* · *"how does the industry approach this?"* · *"find the top approaches and recommend one"*
 
 </details>
 
