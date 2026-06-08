@@ -118,6 +118,7 @@ def lint(path):
     h1_count = 0
     prev_level = 0
     details_depth = 0
+    table_depth = 0
     details_without_summary = []
     ref_defs = set()       # [ref]: url
     ref_uses = []          # (lineno, ref)
@@ -193,6 +194,12 @@ def lint(path):
             if details_depth > 0:
                 details_depth -= 1
 
+        # <table> / </table> balance (raw HTML tables)
+        table_depth += len(re.findall(r"<\s*table\b[^>]*>", scrub, flags=re.I))
+        for _ in re.findall(r"<\s*/\s*table\s*>", scrub, flags=re.I):
+            if table_depth > 0:
+                table_depth -= 1
+
         # reference-style link defs and uses
         rd = re.match(r"^\s{0,3}\[([^\]]+)\]:\s+\S+", scrub)
         if rd:
@@ -230,6 +237,8 @@ def lint(path):
 
     if details_depth != 0:
         errors.append(("html", "unbalanced <details> - %d not closed" % details_depth))
+    if table_depth != 0:
+        errors.append(("html", "unbalanced <table> - %d not closed" % table_depth))
     for ln in details_without_summary:
         warnings.append(("html", "line %d: <details> has no <summary> (toggle label will be generic)" % ln))
 

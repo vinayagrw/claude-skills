@@ -7,9 +7,10 @@ blocks (work *everywhere*, incl. npm/PyPI/CommonMark): **headings, bold/italic, 
 fenced code, image badges, Unicode emoji**. Everything else needs a capable target.
 
 Table of contents: 1) centered hero header · 2) badges · 3) alert callouts · 4) collapsibles ·
-5) Mermaid · 6) tables & alignment · 7) dark/light images · 8) task lists · 9) footnotes ·
-10) `<kbd>` keys · 11) math · 12) diff & code · 13) anchor ToC · 14) emoji wayfinding ·
-15) nav bars & dividers · 16) graceful degradation · 17) gotchas.
+5) Mermaid · 5b) ASCII diagrams & trees · 6) tables & alignment · 6b) HTML tables (colspan) ·
+7) dark/light images · 8) task lists · 9) footnotes · 10) `<kbd>` keys · 11) math ·
+12) diff & code · 13) anchor ToC (+ ToC-as-table) · 14) emoji wayfinding · 15) nav bars &
+dividers · 16) graceful degradation · 17) gotchas.
 
 ---
 
@@ -121,7 +122,44 @@ flowchart LR
 Common types: `flowchart`, `sequenceDiagram`, `classDiagram`, `stateDiagram-v2`, `erDiagram`,
 `gitGraph`, `gantt`, `pie`, `mindmap`. **Quote labels with special chars**: `A["a/b: c"]`.
 **Renderer support:** GitHub/GitLab ✅; **npm/PyPI/CommonMark show the raw code** — for those,
-commit a rendered PNG/SVG and `![]()` it instead.
+commit a rendered PNG/SVG and `![]()` it instead, or use an ASCII diagram (§5b) that renders
+identically everywhere.
+
+## 5b. ASCII diagrams & trees (the renderer-proof diagram)
+
+A box-drawing diagram inside a plain code fence is the **one diagram that looks identical on
+every target** — GitHub, npm, PyPI, a terminal, a plain-text mirror — because it's just
+monospaced text. No Mermaid engine, no image file, no theme. Ideal for architecture sketches,
+data flows, layered stacks, test pyramids, and **file/directory trees**.
+
+````markdown
+```
+┌─────────────┐      ┌─────────────┐      ┌──────────────┐
+│  Browser    │ ───► │  Edge / CDN │ ───► │  Database    │
+│  (PWA)      │ HTTPS│  (static)   │ API  │  (Postgres)  │
+└─────────────┘      └─────────────┘      └──────────────┘
+```
+````
+
+File tree (the most common use):
+
+````markdown
+```
+app/
+├── src/
+│   ├── index.ts        # entry point
+│   └── lib/
+│       └── db.ts       # database client
+├── tests/
+└── package.json
+```
+````
+
+Building blocks: corners `┌ ┐ └ ┘`, lines `─ │`, tees `├ ┬ ┤ ┴ ┼`, arrows `► ◄ ▲ ▼ ↑ ↓ →`,
+double `╔ ═ ╗`. **Tips:** keep it inside a fence so monospacing holds and Markdown doesn't eat
+the pipes; align columns by eye; use it as the **portable fallback** for a Mermaid diagram on
+stripped targets. **Renderer support:** universal (it's just preformatted text). The only cost
+is it's hand-maintained — for a diagram that changes often, prefer Mermaid on GitHub.
 
 ## 6. Tables & alignment
 
@@ -137,6 +175,28 @@ sets column alignment. Outer pipes optional but keep them for readability. Escap
 a cell as `\|`. Cells are inline-Markdown (`**bold**`, `` `code` ``, links, `<br>` for line breaks)
 but **can't contain block elements** (no lists/multi-line) — use `<br>` or a `<details>` outside.
 **Renderer support:** universal across GFM targets (npm/PyPI included); not in bare CommonMark.
+
+## 6b. HTML tables — when a Markdown table can't do it
+
+Markdown tables can't span cells, stack block content, or style a cell. When you need
+**`colspan`/`rowspan`**, a sub-header row that spans the width, a cell holding a list or
+multiple paragraphs, or a background tint, drop to a raw `<table>`:
+
+```html
+<table>
+  <tr><th>Role</th><th>Access</th></tr>
+  <tr><td colspan="2"><strong>Staff</strong> (internal accounts)</td></tr>
+  <tr><td>Admin</td><td>Full CRUD + audit</td></tr>
+  <tr><td>Editor</td><td>Content only</td></tr>
+</table>
+```
+
+Inside cells you can use `<code>`, `<br>`, `<ul><li>`, `<strong>`, even an `<img>`. **Cost:**
+it's verbose and GitHub sanitizes `style`/`class` (inline `style` often survives but don't rely
+on it). **Reach for it only when Markdown genuinely can't express the structure** — a plain
+`| pipe |` table is more readable and more portable for the common case. **Renderer support:**
+GitHub/GitLab/VS Code ✅; **npm/PyPI strip much of it** — keep critical info out of HTML-only tables
+on those targets.
 
 ## 7. Dark/light images (`<picture>`)
 
@@ -226,6 +286,19 @@ leading hyphen). Build a ToC with those:
 **Gotcha:** duplicate heading text gets `-1`, `-2` suffixes. **Verify anchors** — the linter checks
 they resolve. **Renderer support:** GitHub/GitLab/VS Code ✅ (slug rules vary slightly by platform).
 
+**ToC-as-table** — for a long doc, a two-column table reads better than a flat list because each
+entry gets a one-line "what's here":
+
+```markdown
+| Section | What's inside |
+| :------ | :------------ |
+| [🚀 Quick start](#-quick-start) | 4-step local setup |
+| [🏗️ Architecture](#-architecture) | system design & data flow |
+| [❓ FAQ](#-faq) | common issues & fixes |
+```
+
+Same emoji-heading slug rule applies (`## 🚀 Quick start` → `#-quick-start`).
+
 ## 14. Emoji as wayfinding
 
 Bind a small set to section *roles* and reuse: 🚀 getting started · ✨ features · 📦 install ·
@@ -249,8 +322,10 @@ When a doc must look good on GitHub *and* survive on npm/PyPI:
 
 - **Lead with badges + a code block**, not a Mermaid diagram or a callout (those break on npm).
 - Replace alerts with a bold inline label that still reads: `**⚠️ Warning —** don't run this in prod.`
-- Diagrams → commit a rendered **PNG** and `![Architecture](docs/arch.png)` it; keep the Mermaid
-  source in a `<details>` for GitHub readers.
+  (an emoji-prefixed blockquote `> ⚠️ **Note:** …` is the same trick and degrades to a plain quote.)
+- Diagrams → either an **ASCII diagram** (§5b — renders identically everywhere, zero cost) or a
+  committed **PNG** `![Architecture](docs/arch.png)`; keep the Mermaid source in a `<details>` for
+  GitHub readers who want the editable version.
 - Keep the **first screen pure portable Markdown** so the package page (the stripped target) looks
   intentional, and put GitHub-only richness lower down.
 - Footnotes → inline parenthetical asides. Shortcodes → Unicode emoji.

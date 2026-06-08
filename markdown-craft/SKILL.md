@@ -104,8 +104,13 @@ just more decorated. (Syntax + caveats for all of them: the cookbook.)
   "show me the full example". Keeps the default view short while the depth stays one click away.
 - **Mermaid** — a `flowchart`/`sequenceDiagram`/`gitGraph` in a fenced block renders as a
   real diagram on GitHub/GitLab with zero image files. Best for architecture, flows, states.
+- **ASCII diagrams & trees** — box-drawing art (`┌─┐ ├ │`) in a plain code fence is the *one*
+  diagram that renders identically **everywhere**, npm/PyPI included. Reach for it for file
+  trees, layered stacks, and as the portable fallback when Mermaid won't render on the target.
 - **Tables with alignment** — `:---`, `:--:`, `---:`. The most under-used quality lever:
-  any time you're writing parallel prose ("X does A, Y does B, Z does C"), it's a table.
+  any time you're writing parallel prose ("X does A, Y does B, Z does C"), it's a table. When
+  you need spanned cells, stacked content, or styling a Markdown table can't express, drop to a
+  raw HTML `<table>` (`colspan`/`rowspan`) — but only then; pipes are more readable and portable.
 - **Dark/light `<picture>`** — swap a logo by `prefers-color-scheme` so it looks right in both
   GitHub themes. Always nest a fallback `<img>`.
 - **Smaller touches** — task lists `- [x]`; `<kbd>Ctrl</kbd>+<kbd>C</kbd>` for keys; footnotes
