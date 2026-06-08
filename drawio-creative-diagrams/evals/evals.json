@@ -1,0 +1,26 @@
+{
+  "skill_name": "drawio-creative-diagrams",
+  "evals": [
+    {
+      "id": 0,
+      "name": "architecture-from-spec",
+      "prompt": "Turn this into a draw.io diagram I can drop into a design review. Make it look good, not just plain boxes.\n\n--- spec ---\nNotification service. A web client calls our API Gateway (POST /notify). The Gateway authenticates the request against Cognito (JWT with a 'tier' claim). On success it writes the message to an SQS queue. A Lambda worker (fan-out) drains the queue and, depending on channel, calls either the Twilio SMS API or the SendGrid email API (both are external 3rd parties). Every send is written to a DynamoDB 'deliveries' audit table. Free-tier users are rate-limited at the Gateway; paid tier is not. If a send fails 3x it goes to a dead-letter queue.\n--- end spec ---\n\nSave the .drawio file somewhere sensible and tell me what the colours/lines mean.",
+      "expected_output": "A valid, openable .drawio file showing the notification flow: client -> API Gateway -> SQS -> Lambda fan-out -> Twilio/SendGrid -> DynamoDB audit, with Cognito auth, rate-limit, and DLQ. Should use semantic colour (external vs infra vs primary), at least one container/gradient lane or HTML-rich node, and distinct edge styles, plus a short explanation of the encoding. Must pass validate_drawio.py.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "onboarding-flowchart",
+      "prompt": "can you make me a quick drawio flowchart of our user onboarding? steps are: user signs up -> we send a verification email -> if they verify within 24h they go to the welcome tour, otherwise we send one reminder and if still nothing after 7 days we soft-delete the account. after the welcome tour they land on the dashboard. put it in my downloads or wherever",
+      "expected_output": "A valid, openable .drawio flowchart with a clear start, the decision branches (verified within 24h? still nothing after 7 days?), the reminder and soft-delete paths, and the happy path to dashboard. Decisions should read as decision shapes/colour; start/end distinguished. Must pass validate_drawio.py.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "service-dependency-map",
+      "prompt": "I need a draw.io diagram of our microservice dependencies for an onboarding wiki page. Here are the services, their team, and what they call:\n\nservice,team,calls\ngateway,Platform,auth;orders\nauth,Identity,users\norders,Commerce,auth;inventory;payments\ninventory,Commerce,\npayments,Commerce,ledger\nledger,Finance,\nusers,Identity,\n\nColour the boxes by team so it's easy to see ownership. Save it as a .drawio file.",
+      "expected_output": "A valid, openable .drawio file with one node per service, edges following the 'calls' relationships, and boxes coloured by owning team (a consistent colour per team) with some legend/encoding the reader can follow. Must pass validate_drawio.py.",
+      "files": []
+    }
+  ]
+}

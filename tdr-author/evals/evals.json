@@ -1,0 +1,34 @@
+{
+  "skill_name": "tdr-author",
+  "evals": [
+    {
+      "id": 0,
+      "name": "sse-vs-websockets",
+      "prompt": "Write a TDR for choosing between Server-Sent Events and WebSockets for a live notifications feed in our dashboard. Stack is FastAPI on the backend and Next.js on the frontend. I want it Confluence-paste-ready so the team can review it.",
+      "expected_output": "A decision-first TDR recommending one option with a clear rationale; canonical section skeleton; a decision log with status lozenges; an Alternatives section comparing SSE vs WebSockets; a gap audit + blocker sub-specs (full rigor). Dual output: a Mermaid master (-design.md) and a Confluence-paste-safe ASCII copy (-confluence.md) that passes the paste-safety lint.",
+      "files": [],
+      "assertions": [
+        "Produces two files: a Mermaid master ending in -design.md AND a Confluence ASCII copy ending in -confluence.md",
+        "The -confluence.md file contains no ```mermaid blocks, no <details>/<summary>, and no table rows that start with '>' (passes paste_safety_lint.py)",
+        "Contains a Decision log section (table with a Status column using lozenges like DECIDED/PROPOSED)",
+        "Contains an Alternatives section that explicitly compares SSE vs WebSockets and states why the non-chosen option was rejected",
+        "Contains a gap audit section (low-level items still to specify, prioritised) AND a sub-specs section giving concrete contracts for the blockers",
+        "Any backend contract/endpoint/field it states is either grounded or explicitly marked (confirm) since it could not read the real repo"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "redis-session-store",
+      "prompt": "We're moving interview session storage from in-memory to Redis. Document this as a design record — the problem and why now, the alternatives we passed on (e.g. sticky sessions, DynamoDB), and a clear list of what's still unspecified before an engineer can start building.",
+      "expected_output": "A TDR with a crisp decision (Redis), a decision log, an alternatives comparison (in-memory/sticky vs DynamoDB vs Redis), and a strong gap audit listing the still-unspecified low-level details, with concrete sub-specs for the blocking ones. Dual output, Confluence-paste-safe ASCII copy passes the lint.",
+      "files": [],
+      "assertions": [
+        "Produces two files: a Mermaid master ending in -design.md AND a Confluence ASCII copy ending in -confluence.md",
+        "The -confluence.md file passes paste_safety_lint.py (no mermaid fences, no <details>, no blockquoted tables)",
+        "Contains a Decision log and an Alternatives comparison covering at least two rejected options",
+        "Contains a gap audit prioritising what is still unspecified before build, plus concrete sub-specs (e.g. key schema, TTL, serialization) for the blockers",
+        "States proposed contracts (key naming, TTL, data shape) and marks them (confirm) rather than asserting unverified facts"
+      ]
+    }
+  ]
+}
