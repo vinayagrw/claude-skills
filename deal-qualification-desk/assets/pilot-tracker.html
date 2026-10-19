@@ -1,0 +1,35 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Two-Lane Pilot Tracker</title>
+<style>
+:root{--bg:#F7F8FA;--card:#fff;--ink:#1F2937;--mute:#6B7280;--l1:#1E9E6E;--l2:#4B47B8;--line:#E5E7EB}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111318;--card:#1A1D24;--ink:#E5E7EB;--mute:#9CA3AF;--line:#2A2F3A}}
+:root[data-theme="dark"]{--bg:#111318;--card:#1A1D24;--ink:#E5E7EB;--mute:#9CA3AF;--line:#2A2F3A}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,sans-serif;padding:24px 16px}
+main{max-width:980px;margin:auto}h1{font-size:24px;margin:0 0 4px}.sub{color:var(--mute);margin:0 0 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.k{color:var(--mute);font-size:13px;font-weight:600}.bars{display:grid;gap:10px;margin-top:10px}
+.bar{display:grid;grid-template-columns:64px 1fr 70px;align-items:center;gap:8px;font-size:14px}
+.track{height:16px;background:var(--line);border-radius:8px;overflow:hidden}.fill{height:100%;border-radius:8px}
+.l1{background:var(--l1)}.l2{background:var(--l2)}.v{text-align:right;font-weight:700}
+ul{margin:8px 0 0;padding-left:18px}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:6px;border-bottom:1px solid var(--line);text-align:left}
+details{margin-top:16px}summary{cursor:pointer;font-weight:600}.tw{overflow-x:auto}
+</style></head><body><main>
+<h1>Two-lane pilot</h1><p class="sub">30-day test of SE coverage. Lane 1 exploratory, lane 2 qualified and complex.</p>
+<div class="grid" id="kpis"></div>
+<div class="card" style="margin-top:16px"><div class="k">Day-30 review</div><ul id="adv"></ul></div>
+<details><summary>Deal log</summary><div class="tw"><table id="log"></table></div></details>
+</main><script>
+const D=/*__DATA__*/null;
+const K=[["se_hours_per_qualified","SE hours per qualified deal",v=>v==null?"n/a":v],["demo_conversion","Demo to next stage",v=>v==null?"n/a":Math.round(v*100)+"%"],["days_to_tech_decision","Days to technical decision",v=>v==null?"n/a":v]];
+const el=(t,h)=>{const e=document.createElement(t);e.innerHTML=h;return e};
+if(D){const m=D.metrics;
+K.forEach(([k,label,f])=>{const mx=Math.max(m["1"][k]||0,m["2"][k]||0)||1;
+let h=`<div class="k">${label}</div><div class="bars">`;
+["1","2"].forEach(l=>{const v=m[l][k];h+=`<div class="bar"><span>Lane ${l}</span><div class="track"><div class="fill l${l}" style="width:${v==null?0:Math.round(100*v/mx)}%"></div></div><span class="v">${f(v)}</span></div>`});
+document.getElementById("kpis").appendChild(Object.assign(el("div",h+"</div>"),{className:"card"}))});
+D.advice.forEach(a=>document.getElementById("adv").appendChild(el("li",a.replace(/</g,"&lt;"))));
+const cols=Object.keys(D.rows[0]||{});const t=document.getElementById("log");
+t.appendChild(el("tr",cols.map(c=>`<th>${c}</th>`).join("")));
+D.rows.forEach(r=>t.appendChild(el("tr",cols.map(c=>`<td>${String(r[c]??"").replace(/</g,"&lt;")}</td>`).join(""))))}
+</script></body></html>

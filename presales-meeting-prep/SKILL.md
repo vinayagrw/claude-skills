@@ -8,6 +8,8 @@ description: Deep, multi-agent research and a meeting pack for any presales or c
 Generic for any company, industry or person. Never hard-code a client, sector, regulation or name into this skill. Everything specific is discovered by the agents and written to the client folder.
 
 ## 1. Inputs
+If `deal-context.json` exists (written by `presales-ai`), read account, persona, competitor and lane from it and do not ask for them again. Add your output paths under `outputs.meeting_prep`.
+
 Use what the user already gave. Ask once, in one message, only for what is missing and needed:
 - **Company** (name or URL), plus the **person** and role. Either can be optional.
 - **Priorities**, background, meeting date.
@@ -49,6 +51,8 @@ Offer these early, build only on a yes:
 - **Visual style:** when the user says yes to the HTML brief, deck or architecture diagram, ask once for a style from `references/visual-styles.md` (A Duotone line, B Isometric, C Solid glyph tiles, D Blueprint, plus 1 or 2 extras, recommended first) and use it for every visual in the pack.
 - **Pitch deck** via `Artifact` quickstart `intent: slides`, outline in `references/deck-outline.md`. List every slide number and title on delivery.
 - **Technical primer** (`07-technical-primer.md`): glossary of every term of art, why each discovery question is asked, what good and bad answers sound like, pains in plain English.
+- **Discovery plan** (`08-discovery-plan.md`): open questions per persona, depth set by the lane in `deal-context.json` (lane 1 is a short qualification check, lane 2 is full discovery that ends in agreed technical success criteria). Template: `references/scripts-and-discovery.md`.
+- **Scripts** (`09-scripts.md`): call opener, a 3-email sequence (first touch, follow-up, after the demo) and a voicemail line, each tied to one pain and one data point from the research. Drafts only, a person sends them.
 - **Others:** leadership deck, exec memo, talk track, stakeholder map, KPI dictionary, capability or feature catalogue (top N with user stories, value and ROI), bid gap register, ROI page, architecture diagram (draw.io), objection drill, follow-up email draft.
 
 ## 5. Close

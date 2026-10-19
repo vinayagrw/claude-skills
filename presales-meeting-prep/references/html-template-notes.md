@@ -23,4 +23,9 @@ Load `artifact-design` first. Treat the page as a product, visual first with lit
 - Run the em dash and semicolon gate on visible text.
 
 ## Icon system
-Use `assets/solid-tile-icons.svg` (see `assets/README.md`) for every icon. Inline the sprite and reference it with `<use href="#i-name">`. Use no emoji. Labels are 3 words or fewer, and the detail goes in tooltips.
+Use `assets/iso-tile-icons.svg` with `assets/iso-roles.css` for every icon. These are gradient isometric blocks.
+- Inline the sprite once, hidden by width and height 0, never display:none.
+- Put a role class on the wrapper and reference the icon with `<use href="#i-name">`.
+- Size tiers: hero 88, section 64, card 44, chip 32. Under 640px, hero is 64 and section is 56.
+- Use no emoji.
+- Cards show only the icon, a label of 3 words or fewer and one number, and open a shared detail drawer. Use no tooltip-only detail.

@@ -1,0 +1,9 @@
+{
+  "fields": {
+    "metrics": 12, "economic_buyer": 15, "decision_criteria": 10, "decision_process": 10,
+    "paper_process": 5, "pain": 18, "champion": 15, "competition": 5, "fit": 10
+  },
+  "values": {"y": 1, "yes": 1, "strong": 1, "partial": 0.5, "weak": 0.25, "n": 0, "no": 0, "unknown": 0, "": 0},
+  "lane2_threshold": 60,
+  "lane2_requires": ["pain", "economic_buyer"]
+}

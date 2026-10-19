@@ -8,7 +8,7 @@ diagrams that explain themselves, SVGs that actually move, beautiful Markdown, a
 review-ready design records. Plus **six mods** that make Claude Code itself show
 your usage, suggest next steps and warn before costly prompts.
 
-![Skills](https://img.shields.io/badge/skills-8-1971c2?style=flat-square)
+![Skills](https://img.shields.io/badge/skills-12-1971c2?style=flat-square)
 ![Mods](https://img.shields.io/badge/mods-6-e8590c?style=flat-square)
 ![For Claude Code](https://img.shields.io/badge/for-Claude%20Code-d97757?style=flat-square)
 ![License](https://img.shields.io/badge/license-Apache--2.0-2f9e44?style=flat-square)
@@ -43,7 +43,10 @@ flowchart LR
         F["architecture-decision-record"]
     end
     subgraph Sales["🤝 Prepare for a client"]
-        G["presales-meeting-prep"]
+        PA["presales-ai (front door)"] --> G["presales-meeting-prep"]
+        PA --> RB["rfp-response-builder"]
+        PA --> BC["competitive-battle-cards"]
+        PA --> DQ["deal-qualification-desk"]
     end
     idea(["an idea, a spec,<br/>or a doc"]) --> Visuals
     idea --> Docs
@@ -60,7 +63,11 @@ flowchart LR
 | ✏️ **[excalidraw-creative-diagrams](excalidraw-creative-diagrams/SKILL.md)** | Hand-drawn **Excalidraw** `.excalidraw` scenes — sketchy charm, sticky-notes, frames, switchable sketch/clean mode, draw-on animation | "sketch this", "whiteboard this idea", a wireframe, a hand-drawn figure |
 | 📋 **[tdr-author](tdr-author/SKILL.md)** | Decision-first **Technical Design Records** — rationale, rejected alternatives, gap audit, Confluence-paste-safe ASCII | "write up the design for X", "document this decision", "a spec the team can review" |
 | 🏛️ **[architecture-decision-record](architecture-decision-record/SKILL.md)** | An ADR in the ADP template: context, drivers, options, trade-off, outcome, consequences and risks, ready to paste into Confluence | "write an ADR", "record this decision" |
-| 🤝 **[presales-meeting-prep](presales-meeting-prep/SKILL.md)** | A sourced research folder and meeting brief built in waves: identity check, company, leaders, hiring, competitors, today vs target architecture, top challenges, AI opportunities, roadmap, red team and a verification log | "prepare for a meeting with X", "research this company" |
+| 🚪 **[presales-ai](presales-ai/SKILL.md)** | One front door for presales. Asks what you need once, writes a shared `deal-context.json`, then routes to the four skills below or chains them into a full deal pack | "help me win this deal", "presales", "deal pack" |
+| 📝 **[rfp-response-builder](rfp-response-builder/SKILL.md)** | RFP, RFI and security questionnaire answers from your answer library. Each answer is sourced and marked green, amber or red, unsourced ones go to an SME. Includes a consistency check and a proposal with a bid or no-bid box | "answer this questionnaire", "draft the proposal" |
+| ⚔️ **[competitive-battle-cards](competitive-battle-cards/SKILL.md)** | Sourced one-page battle cards from internal notes and public research, plus win-loss analysis that finds leading signals in closed deals | "battle card for X", "why do we lose" |
+| 🎯 **[deal-qualification-desk](deal-qualification-desk/SKILL.md)** | Market research, personas, lead lists, MEDDPICC-style scoring, two-lane SE routing and a 30-day pilot tracker | "qualify these deals", "where should SEs spend time" |
+| 🤝 **[presales-meeting-prep](presales-meeting-prep/SKILL.md)** | A sourced research folder and meeting brief built in waves: identity check, company, leaders, hiring, competitors, today vs target architecture, top challenges, AI opportunities, roadmap, red team and a verification log | "prepare for a meeting with X", "research this company", "write the call script" |
 | 🧭 **[solution-design-explorer](solution-design-explorer/SKILL.md)** | Deep, research-backed **solution-architecture deep-dives** — surveys how the field solves it, multi-persona reasoning, pattern comparison, self red-team, SOTA refresh, a recommendation | "architect a solution for X", "how does the industry do this?", "find the top N approaches and recommend one" |
 
 > [!NOTE]
@@ -69,7 +76,7 @@ flowchart LR
 
 ## 🚀 Quick start
 
-Install **all eight** skills into your personal Claude Code skills folder, then start (or
+Install **all twelve** skills into your personal Claude Code skills folder, then start (or
 restart) Claude Code — they load automatically.
 
 <details open>

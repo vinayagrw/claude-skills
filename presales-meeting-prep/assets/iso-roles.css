@@ -1,0 +1,7 @@
+/* Isometric icon roles. Put a class on any ancestor of the use element. */
+.iso-teal{--iso-hi:#87C4B5;--iso-mid:#0F8A6B;--iso-lo:#084C3B;}
+.iso-amber{--iso-hi:#DCBA87;--iso-mid:#B8740F;--iso-lo:#654008;}
+.iso-coral{--iso-hi:#E8AA96;--iso-mid:#D2552D;--iso-lo:#742F19;}
+.iso-violet{--iso-hi:#A5A2D4;--iso-mid:#4B44A8;--iso-lo:#29255C;}
+.iso-slate{--iso-hi:#ADB2B8;--iso-mid:#5B6472;--iso-lo:#32373F;}
+.iso-red{--iso-hi:#E48896;--iso-mid:#C8102E;--iso-lo:#6E0919;}
