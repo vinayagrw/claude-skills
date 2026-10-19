@@ -5,7 +5,8 @@
 **A curated collection of [Claude Code](https://docs.claude.com/en/docs/claude-code) skills**
 that turn a one-line idea — or a dense design doc — into polished, editable artifacts:
 diagrams that explain themselves, SVGs that actually move, beautiful Markdown, and
-review-ready design records.
+review-ready design records. Plus **six mods** that make Claude Code itself show
+your usage, suggest next steps and warn before costly prompts.
 
 ![Skills](https://img.shields.io/badge/skills-8-1971c2?style=flat-square)
 ![Mods](https://img.shields.io/badge/mods-6-e8590c?style=flat-square)
@@ -183,7 +184,71 @@ Two ways a skill fires:
 
 ## 🧩 Mods
 
-The [`mods/`](mods/README.md) folder holds six Claude Code mods: small plugins that change the app itself, such as a usage band above the prompt, suggested next steps after each reply and a `/insights` token report. They came out of an audit of my own usage. See [mods/README.md](mods/README.md) for what each one does and how to build and install them.
+> [!TIP]
+> **Skills change what Claude does. Mods change the app you work in.** This repo ships both.
+> The six mods live in [`mods/`](mods/README.md) and install as one marketplace named `my-mods`.
+
+### Skill or mod?
+
+| | 🧰 Skill | 🧩 Mod |
+| :-- | :-- | :-- |
+| **What it is** | A `SKILL.md` playbook with references and scripts | A Claude Code plugin with a hooks module (`hooks/register.tsx`) |
+| **What it changes** | How Claude does a task, such as drawing a diagram | The app itself: a band above the prompt, toasts, slash commands, prompt checks |
+| **When it runs** | When your request matches its description | On app events: session start, each turn, each prompt, each tool call |
+| **Token cost** | Loads into context when used | Mostly none. Only next-step (smart mode) makes a small Haiku call |
+| **Install** | Copy the folder into `~/.claude/skills/` | `claude plugin install <mod>@my-mods --scope user` |
+
+```mermaid
+flowchart LR
+    U(["You type a prompt"]) --> P["prompt.submit<br/>cache-tax checks for a cold cache"]
+    P --> C["Claude works<br/>skills load here"]
+    C --> T["turn.complete<br/>next-step suggests follow-ups"]
+    T --> M["session.measure<br/>usage-meter updates the band"]
+    M --> U
+```
+
+### The six mods
+
+| Mod | In one line | Try |
+| :-- | :-- | :-- |
+| 📊 **[usage-meter](mods/usage-meter)** | A line above the prompt with context fill, limit windows, cost and how long the cache stays warm | `/usage-meter` |
+| ➡️ **[next-step](mods/next-step)** | Three suggested next steps after each reply. A press adds the text to your prompt box | `/next-step smart` |
+| 🧊 **[cache-tax](mods/cache-tax)** | Holds the first prompt after the cache goes cold and shows what it will cost | `/cache-tax on` |
+| 🔍 **[context-lens](mods/context-lens)** | Bars showing what fills the context window, biggest first | `/lens` |
+| 📈 **[token-insights](mods/token-insights)** | A token report for today, a week, a month or any date range | `/insights week` |
+| ⛵ **[firstmate-calm](mods/firstmate-calm)** | A quieter transcript with a sailboat spinner | `/calm` |
+
+### Why they exist
+
+They come from an audit of 30 of my own sessions, about 1.83B tokens, Aug to Oct 2026.
+
+- 📦 **Big contexts.** All 104 compactions were manual, at a median of 276k tokens.
+- 🚧 **Surprise limits.** The session limit was hit 37 times with no warning.
+- 🧊 **Cold caches.** 67 returns after an hour idle each re-wrote about 156k tokens.
+- 🔁 **Repeated follow-ups.** "What did we miss" and the truthiness check were typed again and again.
+
+### Install the mods
+
+```bash
+claude plugin marketplace add ./mods
+claude plugin install usage-meter@my-mods --scope user
+```
+
+Repeat the second line for each mod you want, then type `/reload-plugins` in Claude Code.
+
+<details>
+<summary><b>Check and test the mods before installing</b></summary>
+
+<br/>
+
+```bash
+for m in mods/*/; do claude plugin validate "$m" && claude plugin test "$m"; done
+```
+
+Every mod ships its own test suite. See [mods/README.md](mods/README.md) for the events each
+mod uses, its cost to run and the folder layout.
+
+</details>
 
 ## 🔍 Skill details
 
