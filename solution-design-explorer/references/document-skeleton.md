@@ -76,8 +76,8 @@ The Strand-C content, sharpened against the now-drafted design. Date-stamped. Co
 - **13.2** Honest scope — what the stated budget/timeline *actually* buys vs. the full vision. Resist over-promising; a credible "here's the MVP, here's wave 2" beats a fantasy.
 - **13.3** (if pre-sales) the close — see §14.
 
-## 14. How we help — the close `[OPT]`
-Pre-sales / client-facing only. The differentiator and delivery angle. See `references/presales-framing.md`. Keep it earned, not boastful — tie each claim to something concrete in the design.
+## 14. How [Ciklum / we] help — the close `[OPT]`
+Pre-sales / client-facing only. The differentiator and delivery angle. See `references/ciklum-framing.md`. Keep it earned, not boastful — tie each claim to something concrete in the design.
 
 ## Appendix A — Source ledger `[CORE]`
 Table: claim → source → confidence (high/med/low) → notes (e.g., "vendor self-reported, excluded from accuracy claims"). Makes the doc auditable and signals intellectual honesty.

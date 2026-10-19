@@ -21,6 +21,13 @@
       "prompt": "I need a draw.io diagram of our microservice dependencies for an onboarding wiki page. Here are the services, their team, and what they call:\n\nservice,team,calls\ngateway,Platform,auth;orders\nauth,Identity,users\norders,Commerce,auth;inventory;payments\ninventory,Commerce,\npayments,Commerce,ledger\nledger,Finance,\nusers,Identity,\n\nColour the boxes by team so it's easy to see ownership. Save it as a .drawio file.",
       "expected_output": "A valid, openable .drawio file with one node per service, edges following the 'calls' relationships, and boxes coloured by owning team (a consistent colour per team) with some legend/encoding the reader can follow. Must pass validate_drawio.py.",
       "files": []
+    },
+    {
+      "id": 3,
+      "name": "animated-sequence-diagram",
+      "prompt": "Make me a draw.io SEQUENCE diagram of our OAuth login flow, design-review quality, animated where things move. Participants: Browser, API, Cognito, Token Store. Flow: Browser sends credentials to API; API calls Cognito to authenticate; Cognito returns a JWT to API; API writes the session to Token Store; API returns the token to Browser. Add a loop fragment for 'token refresh every 50 min' and an alt fragment for 'if refresh token expired -> redirect to re-login'. Save the .drawio file.",
+      "expected_output": "A valid, openable .drawio sequence diagram hand-authored in Path A (NOT Mermaid, because the user asked for animation). Should have one header + lifeline per participant (lifelines as dashed floating edges, NOT animated), the messages as animated horizontal edges, and the loop/alt fragments as left-margin label tabs rather than an enclosing umlFrame. Must pass validate_drawio.py with zero QUALITY warnings (no off-grid, no box-crossing, no near-invisible contrast).",
+      "files": []
     }
   ]
 }

@@ -1,0 +1,39 @@
+{
+  "name": "my-mods",
+  "owner": {
+    "name": "Vinay"
+  },
+  "plugins": [
+    {
+      "name": "usage-meter",
+      "source": "./usage-meter",
+      "description": "Context, limits, cost and cache band above the prompt"
+    },
+    {
+      "name": "next-step",
+      "source": "./next-step",
+      "description": "Suggested next steps above the prompt after each reply"
+    },
+    {
+      "name": "cache-tax",
+      "source": "./cache-tax",
+      "description": "Holds the first prompt after the cache goes cold and shows the cost"
+    },
+    {
+      "name": "firstmate-calm",
+      "source": "./firstmate-calm",
+      "description": "Quiet transcript and sailboat spinner; /calm toggles"
+    },
+    {
+      "name": "context-lens",
+      "source": "./context-lens",
+      "description": "/lens shows what fills the context window, biggest first"
+    },
+    {
+      "name": "token-insights",
+      "source": "./token-insights",
+      "description": "/insights token report for today, week, month or a date range"
+    }
+  ],
+  "description": "Vinay's personal Claude Code mods"
+}

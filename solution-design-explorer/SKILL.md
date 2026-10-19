@@ -32,7 +32,7 @@ Before researching, pin down:
 
 1. **The target.** What capability/solution is being designed? One sentence you could defend.
 2. **Reference material.** Any brief, RFP, proposal deck (.pptx), PDF, prior doc, or links the user points to. Read them — they carry constraints (budget, timeline, existing stack, non-negotiables) that shape the whole design. For .pptx, use the `pptx` skill or unpack and extract `<a:t>` text; for .pdf use the Read tool's PDF support.
-3. **Audience & purpose.** Internal architecture review? Pre-sales / client-facing? A build team? This sets tone and how much "how we help" framing to include (see `references/presales-framing.md`, optional).
+3. **Audience & purpose.** Internal architecture review? Pre-sales / client-facing? A build team? This sets tone and how much "how we help" framing to include (see `references/ciklum-framing.md`, optional).
 4. **Constraints.** Stack, security/identity rules, data-residency, budget, delivery window. Capture them verbatim — they become a "Constraints" subsection and a recurring reality check.
 
 **Detect the mode** — it changes which scaffolding you apply:
@@ -87,7 +87,7 @@ Use the section skeleton in `references/document-skeleton.md`. It's modular: a *
 11. Concluding research — closing the gaps (Step 5)
 12. What we missed — last-2-months SOTA refresh (Step 1C, sharpened)
 13. Final recommendation & honest scope
-14. (Optional) How we help — the close
+14. (Optional) How [Ciklum/we] help — the close
 15. Appendix: source ledger
 
 ## Step 4 — Design patterns & comparison
@@ -121,5 +121,5 @@ Write the deliverable where the user keeps their work (infer from the reference 
 - `references/personas.md` — the default persona panel and how to adapt it per topic.
 - `references/design-patterns.md` — the agent design-pattern catalog (A–G), comparison-matrix dimensions, decision-tree and composite guidance, anti-patterns.
 - `references/mermaid-cookbook.md` — Mermaid conventions, the color legend, diagram catalog, and render-validation workflow.
-- `references/presales-framing.md` — optional pre-sales / "how we help" framing and reference-architecture hooks. Include only when the audience is pre-sales/client-facing.
+- `references/ciklum-framing.md` — optional pre-sales / "how Ciklum helps" framing and reference-architecture hooks. Include only when the audience is pre-sales/client-facing.
 - `scripts/validate_mermaid.py` — render-validates all Mermaid blocks in a Markdown file.

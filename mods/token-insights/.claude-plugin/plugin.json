@@ -1,0 +1,6 @@
+{
+  "name": "token-insights",
+  "version": "0.2.0",
+  "description": "/insights reports token use for today, a week, a month or a date range, with insights on what drove it.",
+  "types": "./types/index.d.ts"
+}
