@@ -5,12 +5,15 @@ description: >-
   diagrams (.drawio files) from any input — a design doc, TDR, spec, architecture
   description, API flow, data table, or a one-line idea. Goes beyond plain
   boxes-and-arrows by using draw.io's expressive features: gradient-filled lanes,
+  an icon-forward layout (real service/brand icons or emoji glyphs over short
+  captions, minimal boxes, soft coloured zones — the modern cloud/product look),
   embedded HTML-table labels, a semantic colour system, swimlane/container
   grouping, meaning-bearing edge styles (control vs data vs identity paths),
   legends, and — where they fit better — embedded Mermaid or CSV-driven
   generation. Use this whenever the user wants to diagram, visualise, draw, map
   out, or "make a draw.io" of anything — architecture, flowchart, sequence, ER,
-  org chart, state machine, network — even if they only say "diagram this",
+  org chart, state machine, network, or a cloud/infra reference architecture with
+  official AWS/Azure/GCP service icons in trust zones — even if they only say "diagram this",
   "visualise this spec", "turn this doc into a picture", or paste a document and
   ask for a figure. Output is always a ready-to-open .drawio file.
 ---
@@ -27,6 +30,15 @@ Three things make a draw.io diagram *good*:
    information, so the reader understands the system before reading a single label.
 3. **It stays editable** — real shapes and text, never a flattened image, so the
    user can tweak it.
+
+## Icon size (non-negotiable)
+
+The user has repeatedly asked for **bigger icons**. Every diagram, every time:
+- **Cloud / service / stencil / image icons: ≥ 80×80** (80–96 typical). Never 48–60.
+- **Emoji / glyph icons: font-size ≥ 64px** (**72px** on hero/landing diagrams). Never 40–46.
+- **Captions: 14–16px bold.** **Zone titles: 16–18px.**
+- Widen spacing, zone sizes and page size to fit. **Never shrink icons to avoid overlap.**
+- `validate_drawio.py` warns on any icon below these minimums — treat those warnings as must-fix.
 
 ## Step 0 — Read for the intention, then choose a metaphor that *performs* it
 
@@ -77,6 +89,36 @@ You can also **combine**: an XML canvas with a Mermaid shape embedded in one cor
 
 When unsure, default to **A** — it never blocks you on a feature.
 
+> **Cloud / infra-topology diagrams** (real AWS/Azure/GCP service icons inside named
+> trust zones — a VPC diagram, a landing zone, a "reference architecture", or matching a
+> reference deck the user hands you) are a **Path A** variant with their own idiom:
+> official provider **stencil icons** grouped into **nested zone containers**, not gradient
+> lanes. Read [references/cloud-architecture-stencils.md](references/cloud-architecture-stencils.md)
+> for the icon recipe, the curated `mxgraph.aws4.*` name list, category colours, and the
+> nest-don't-flatten rule. For the **canonical AWS reference architecture** — official
+> `mxgraph.aws4.group` containers (`AWS Cloud ▸ Region ▸ VPC ▸ Availability Zone ▸
+> Public/Private Subnet`), a **multi-AZ grid**, **Data-Plane / Control-Plane backdrop
+> bands** (translucent `opacity≤40` tints that span across the AZ rows), and the bracket /
+> note / document furniture — see §6 of that same file.
+>
+> **Mixed-vendor "system topology" pictures** — the kind that put SaaS brand logos (Twilio,
+> Deepgram, ElevenLabs, Qdrant, Snowflake, Datadog…) *next to* cloud icons, overlay big
+> *Speech Input → Text Output* **phase band-arrows**, annotate hops with **latency budgets**
+> (`~200ms`), and route flows through **transport clouds** ("Internet", "WebSocket API") —
+> are the current (2025–2026) idiom. Read
+> [references/modern-diagrams-2026.md](references/modern-diagrams-2026.md) for the brand-chip
+> recipe + brand-hex table, band-arrows (`singleArrow`/`doubleArrow`), metric tags, transport
+> glyphs, the vertical context band, **and a ~50-entry catalog of diagram archetypes**
+> (RAG, agentic, voice-AI, CI/CD, service mesh, medallion, C4…) so you know the metaphor for
+> almost anything the user names. The attached voice-AI + Multi-Tenant-RAG reference is its §8.
+
+> **Sequence diagrams are the one row that pulls both ways.** Path B (Mermaid) is right
+> for a *plain* sequence the user will keep editing as text — but **Mermaid cannot
+> animate, gradient, or carry the house style**. The moment the user asks for "animated",
+> "design-review quality", or a look that matches the rest of the deck, B can't deliver
+> it and you must hand-author in **Path A** using the sequence recipe in §A.5c. Rule of
+> thumb: *plain + text-tweakable → B; animated / styled / part of a larger A canvas → A.*
+
 ---
 
 ## Path A — hand-authored mxGraph XML (the creative default)
@@ -91,10 +133,14 @@ flow / sequence-of-services** diagram, compose with this spine by default:
 
 1. **A gradient banner header** across the top — title + a small subtitle/status line in
    a lighter tint. Anchors the page and sets the palette. (recipe in palette-and-recipes)
-2. **A clear flow axis of "lanes", not bare boxes.** Each primary node is a gradient-
-   filled lane with a **bold emoji-prefixed title** and a short *structured body*
-   (1–4 lines: the endpoint, the steps, the key attribute) — `align=left;verticalAlign=top`.
-   A lane carries information; a 120×60 rectangle with one word does not.
+2. **A clear flow axis of nodes, not bare boxes.** **Default to the icon-forward primitive
+   (§A.0b): a recognisable icon with a short caption beneath and NO box, related nodes
+   gathered into soft coloured zones with a visible 2px border.** It's the cleaner, more
+   modern look and the right choice for most system/architecture/infra pictures. Switch a
+   node to a **gradient-filled lane** (bold emoji title + a 1–4-line structured body,
+   `align=left;verticalAlign=top`) only when it genuinely needs that detail — an endpoint,
+   the steps, a config/request table. Either way a node must carry meaning; a 120×60
+   rectangle with one word does not.
 3. **One "hero" path.** Pick the single most important flow (the data/media path, the
    happy path, the money path) and draw it as a **thick accent edge** (e.g. orange
    `strokeWidth=4`) so the eye lands on it first. Everything else stays thin. A diagram
@@ -116,6 +162,32 @@ default. The **distinctiveness bar** at the end of this file is the explicit tes
 
 Restraint is part of the style: **one** accent colour, the semantic palette for
 everything else, generous whitespace, strong alignment. Distinctive ≠ noisy.
+
+### A.0b Two house looks — icon-forward (default) vs gradient lanes
+
+There are **two** first-class ways to render a node in this house style. **Default to
+icon-forward**; reach for gradient lanes only when a node needs a real body of text:
+
+- **Icon-forward (the default)** — each node is a **recognisable icon (real service stencil
+  or emoji) with a one-to-three-word caption and NO box**, and related nodes gather into
+  **soft coloured zones with visible 2px borders**. This is the modern cloud/product look
+  and the right default for most system/architecture/infra pictures and any many-component
+  "system map" where a box-per-node would be a wall of rectangles. It's *especially* what to
+  reach for when the user says "icons / no boxes / minimal boxes / clean / modern / not just
+  boxes". Encode a category axis (build source, ownership, status) with a small **pill
+  badge** under the caption, not a box fill.
+- **Gradient lanes (fallback for detail-heavy nodes)** — each node is a filled lane with an
+  emoji title and a **structured multi-line body**. Reach for it when components need real
+  detail per node (endpoints, steps, a config/request table) — a control-plane/data-plane
+  story, a request flow with attributes — or mix a few such lanes into an otherwise
+  icon-forward canvas.
+
+Full recipe — the three node primitives, the soft-zone/`opacity=40` rule, the pill badge,
+per-zone colour palette, emoji-curation craft, and a generator pattern — is in
+[references/icon-forward-language.md](references/icon-forward-language.md). The two looks
+**mix**: icon-forward glyphs inside a couple of gradient lanes, or one HTML-table node
+dropped into an icon-forward zone. Everything else in the house style (banner, one hero
+flow, legend, animation, anti-overlap) applies to both.
 
 ### A.1 The skeleton is non-negotiable
 
@@ -175,9 +247,26 @@ Always **validate before delivering** — see §A.7.
 
 This is what separates a memorable diagram from a default one. Detailed style strings,
 the full palette, and copy-paste recipes live in
-[references/style-reference.md](references/style-reference.md) and
-[references/palette-and-recipes.md](references/palette-and-recipes.md) — read them when
-you author. The essentials:
+[references/style-reference.md](references/style-reference.md),
+[references/palette-and-recipes.md](references/palette-and-recipes.md), for
+provider-stencil cloud diagrams [references/cloud-architecture-stencils.md](references/cloud-architecture-stencils.md),
+and — for mixed-vendor topology pictures (SaaS brand chips, phase band-arrows, latency
+tags, transport clouds) plus the diagram-archetype catalog —
+[references/modern-diagrams-2026.md](references/modern-diagrams-2026.md)
+— read them when you author. The essentials:
+
+- **Never guess an icon — run the Icon Selection Protocol first.** Before you emit *any*
+  provider icon or brand mark, confirm a real stencil exists for that name: a wrong
+  `resIcon`/image path renders as a **blank box** the validator can't catch. Run
+  `python scripts/find_icon.py "<name>"` — it returns the genuine `mxgraph.aws4.*` id(s) to
+  pick from (choose the one whose category fits the node's *intention*), or a fallback when
+  nothing real matches. No stencil → **fallback ladder**: for a branded third-party
+  product (Temporal, Firecracker, Qdrant…) fetch its **official logo online and embed it
+  as a self-contained `data:` image node** — `python scripts/fetch_logo.py "<name>"` does
+  the download+encode+style; a flat **brand chip** (brand hex) is only the graceful
+  degradation when no logo can be obtained. Own logical components → semantic labelled
+  lane. Always keep a text label. Full procedure + decision flow in
+  [references/icon-selection.md](references/icon-selection.md).
 
 - **Semantic colour, not decoration.** Use the standard draw.io palette and bind each
   hue to a *role* (a service, a layer, a status), then reuse it consistently so the
@@ -191,6 +280,13 @@ you author. The essentials:
   | Error / end / danger | `#f8cecc` | `#b85450` |
   | Neutral / infra | `#f5f5f5` | `#666666` |
   | External / 3rd-party | `#e1d5e7` | `#9673a6` |
+
+  **Contrast is non-negotiable: text must be legible on its fill.** Every node that
+  sets a `fillColor` also needs a `fontColor` that contrasts it — **dark text on light
+  fills, light text only on genuinely dark fills**. The trap is a custom *light* fill
+  (a pastel rail, a tinted lane) left with light text, or a *dark* fill left with the
+  default near-black text — both render invisible. Don't eyeball it: the validator's
+  quality pass (§A.7) now computes WCAG contrast and flags any near-invisible label.
 
 - **Gradients + shadows for depth.** `gradientColor=#...;shadow=1;rounded=1;arcSize=6`
   turns a flat box into a lane that reads as a "surface". Use on the major containers.
@@ -218,7 +314,8 @@ you author. The essentials:
 - Establish a **flow axis** (top→bottom or left→right) and keep every primary edge
   moving along it; cross-traffic (legends, stores, identity) goes to the side.
 - Standard box ≈ `160×60`; major lanes wider. Leave **40–60px** between siblings
-  horizontally, **80–120px** vertically — crowding reads as broken.
+  horizontally, **80–120px** vertically — crowding reads as broken. Icon-forward nodes
+  (≥80px icons / ≥64px glyphs) need **≥180px column pitch** and **≥160px row pitch**.
 - **≤ ~40 cells per page.** Past that, split into a second `<diagram>` page rather than
   shrinking everything.
 - Align everything to the grid and to each other; a shared left edge does more for
@@ -346,6 +443,84 @@ in the interactive viewer/lightbox. Use them to **show motion and direction**.
 > wrappers — `validate_drawio.py` accepts them. When you use animation, mention in the
 > hand-off that it plays in draw.io / the interactive viewer, not in a static image.
 
+### A.5c Sequence diagrams in Path A (lifelines, messages, fragments)
+
+When the user wants an **animated or house-styled** sequence diagram, hand-author it here —
+Mermaid (Path B) can't animate or carry the style. There's no `umlFrame` and no built-in
+lifeline; you compose from **floating edges** (fixed `sourcePoint`/`targetPoint`, no
+source/target ids), and that's an advantage: floating edges are invisible to the
+overlap/box-crossing quality pass, so even a dense sequence stays validator-clean. Five
+constructs, each a known-good pattern:
+
+1. **Participant headers** — a row of gradient boxes across the top (these *are* A.0's
+   "lanes" for a sequence), one per actor, each centred on its lifeline's x. **Choose
+   those x-centres on the 10px grid up front** (e.g. 200, 470, 740, 1010) so no message or
+   bar lands off-grid later — the #1 source of spurious warnings here.
+2. **Lifelines** — one dashed vertical edge dropping from each header: `endArrow=none`,
+   fixed `sourcePoint`/`targetPoint`, **no** source/target, **not** animated (it's static
+   structure, not a flow).
+3. **Messages** — a horizontal edge between two lifeline x's at a grid-aligned y: fixed
+   points, `endArrow=block` for a call / `dashed=1;endArrow=open` for a return, and
+   **animated** (`flowAnimation=1`) — these are the flows. Number them ①②③ and make the
+   single most important one the **hero** (thick orange).
+4. **loop / alt / opt fragments** — a **left-margin label tab** (a small filled box reading
+   `loop [...]` / `alt [...]`), **not** an enclosing rectangle. *Never* wrap the messages in
+   a `umlFrame`/backdrop frame: its border is crossed by every lifeline and message inside
+   it (clutter, and for bound edges it trips the box-crossing check). The tab — plus an
+   optional dashed `[else]` divider edge — conveys the fragment without a frame.
+5. **Notes** — short explainer boxes parked in the **right margin** (a message-free zone),
+   dashed, off the lifelines.
+
+Activation bars are optional; if used, size and place them so every edge stays on-grid
+(centring a thin bar on a lifeline is what generates off-grid warnings). The A.0 spine
+maps cleanly: headers = lanes, the key message = hero path, margin notes = side rail,
+numbered messages = stage rail, legend as usual.
+
+```xml
+<!-- lifeline: dashed, floating, NOT animated -->
+<mxCell id="ll_api" parent="1" edge="1"
+        style="html=1;endArrow=none;dashed=1;strokeColor=#9aa7b5;">
+  <mxGeometry relative="1" as="geometry">
+    <mxPoint x="470" y="200" as="sourcePoint"/><mxPoint x="470" y="1200" as="targetPoint"/>
+  </mxGeometry></mxCell>
+<!-- message: floating, animated; hero = thick orange + contrasting fontColor -->
+<mxCell id="m1" value="① POST /login (credentials)" parent="1" edge="1"
+        style="html=1;endArrow=block;strokeColor=#e8732a;strokeWidth=4;flowAnimation=1;fontColor=#b85a1a;">
+  <mxGeometry relative="1" as="geometry">
+    <mxPoint x="200" y="320" as="sourcePoint"/><mxPoint x="470" y="320" as="targetPoint"/>
+  </mxGeometry></mxCell>
+<!-- fragment as a margin tab (NOT an enclosing frame) -->
+<mxCell id="frag_loop" value="loop [every 50 min]" parent="1" vertex="1"
+        style="rounded=0;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#6b4f00;fontSize=11;">
+  <mxGeometry x="40" y="600" width="140" height="30" as="geometry"/></mxCell>
+<!-- optional [else] divider for an alt: a dashed floating edge across the lifelines,
+     no arrow, NOT animated (it's a divider, not a flow) -->
+<mxCell id="frag_else" value="[else] expired → re-login" parent="1" edge="1"
+        style="html=1;endArrow=none;dashed=1;strokeColor=#b85450;fontColor=#7a2e2c;fontSize=10;">
+  <mxGeometry relative="1" as="geometry">
+    <mxPoint x="200" y="900" as="sourcePoint"/><mxPoint x="1010" y="900" as="targetPoint"/>
+  </mxGeometry></mxCell>
+```
+
+### A.5d Modern topology idioms — band-arrows, metric tags, brand chips, transport hops
+
+For mixed-vendor "system topology" pictures (a realtime AI pipeline, a RAG architecture, a
+CI/CD chevron flow, a data-lakehouse medallion), four extra idioms — all built-in shapes,
+all validator-safe when placed right — carry the current look. Full recipes + a ~50-entry
+archetype catalog in [references/modern-diagrams-2026.md](references/modern-diagrams-2026.md):
+
+- **Phase band-arrows** — `shape=singleArrow` / `doubleArrow` label a *span* of the pipeline
+  ("Speech Input → Text Output", "Bronze → Silver → Gold"). **Hard rule: a band lives in its
+  own clear strip, never overlapping nodes** — a partial overlap with a box is a §A.7 error.
+  Pale fill + dark font so it reads as a background phase label, not a competing hero.
+- **Latency / SLA / cost tags** — red borderless `~200ms` budgets, as an edge label or a
+  floating `text;fillColor=none` tag in clear space. Red = a budget to beat, grey = info.
+- **Brand chips** for SaaS with no stencil (Twilio, Deepgram, Qdrant…): a rounded box in the
+  brand hex + bold white label. Convention: provider stencil = cloud service, brand chip =
+  third-party SaaS, semantic lane = your own component — three classes, decoded in the legend.
+- **Transport hops** — a grey built-in `shape=cloud` ("Internet") with a dashed protocol
+  sublabel ("Streaming WebSocket API"); animate the edges *through* it, leave the cloud static.
+
 ### A.6 Multi-page
 
 Add more `<diagram>` blocks inside `<mxfile>` for additional pages (e.g. an overview
@@ -361,14 +536,42 @@ and read their actual output. "Should be valid" / "looks animated" are not evide
 
 Run the bundled validator. It catches the structural failure modes above (missing root
 cells, duplicate ids, vertices without geometry, edges with dangling source/target,
-off-grid coords) **and runs a quality pass that flags anti-overlap violations**: two boxes
-partially overlapping (reported as an error) and an edge whose route crosses a third box
-it doesn't connect to (reported as a `QUALITY` warning). The edge check is route-aware —
-it respects your exit/entry faces and waypoints, so a *properly* routed edge is not flagged.
+off-grid coords) **and runs a quality pass** that flags: two boxes partially overlapping
+(reported as an error); an edge whose route crosses a third box it doesn't connect to (a
+`QUALITY` warning); and **any node whose text and fill have near-invisible WCAG contrast**
+(a `QUALITY` warning — the light-on-light / dark-on-dark bug). The edge check is
+route-aware — it respects your exit/entry faces and waypoints, so a *properly* routed edge
+is not flagged.
+
+The validator is **nesting-aware**: it resolves each child's parent chain to absolute
+coordinates before the quality pass, so a correctly nested diagram (zones as containers,
+components as children — see the cloud-stencil reference) validates `[OK]`; it does **not**
+mistake a child for colliding with its own container. Three things it intentionally treats
+as soft/benign: a **centered icon** in an odd-width zone is legitimately off the 10px grid
+(don't chase those `off the grid` hints); the contrast check **skips externally-labelled
+shapes** (`verticalLabelPosition=top/bottom`, e.g. AWS icons) whose caption sits on the page,
+not the fill; and a **translucent backdrop** (`opacity≤40` — a Data/Control-plane tint or a
+zone wash meant to sit *behind* the grid) is **exempt from the overlap and edge-crossing
+checks**, so it may legitimately span across AZ-row/subnet containers. Everything else it
+flags is real — fix it. (Corollary: if you *intend* a plane band to cross the grid, it
+**must** be `opacity≤40`, or it reads as a solid box and the overlap is correctly flagged.)
 
 ```bash
 python scripts/validate_drawio.py <path-to-file>.drawio
 ```
+
+**Then render it and look at it — the validator can't see appearance.** It proves the file
+is well-formed; only an image proves the diagram *looks* right: icon sizing, a caption that
+wrapped to three lines, a service stencil that rendered a **blank square** (wrong `resIcon`),
+a badge colliding with the row below, a zone crowding its icons. For icon-forward diagrams
+and any dense/infra picture, render a PNG and inspect it before claiming done — there's no
+draw.io CLI needed, just Node + the bundled script:
+```bash
+node scripts/render_drawio.js <path-to-file>.drawio /tmp/proof.png [pageIndex]   # then open /tmp/proof.png
+```
+One-time setup, the multi-page note, and an important caveat (the static viewer can't render
+embedded `data:` logos — they look broken in the proof but are fine in real draw.io) are in
+[references/rendering-and-proofing.md](references/rendering-and-proofing.md).
 
 Before claiming completion, confirm **each** of these against real output — fix and re-run
 until every one is clean:
@@ -430,8 +633,10 @@ skill-made work — go back and lift it.* For any diagram with ≥4 components, 
 clear most of these:
 
 - [ ] **Banner** header (gradient, title + subtitle/status).
-- [ ] Primary nodes are **structured lanes** (gradient + emoji title + a body line or
-      two), not bare one-word rectangles.
+- [ ] Primary nodes are **icon-forward glyphs by default** (icon/emoji over a short caption,
+      no box, gathered into soft coloured zones with a **visible 2px border**; a category axis
+      carried by **pill badges**) — or **structured gradient lanes** where a node genuinely
+      needs detail (emoji title + a body line or two). Never bare one-word rectangles.
 - [ ] **One hero path** stands out (thick accent edge); other edges are thinner.
 - [ ] Cross-cutting concerns (identity / store / audit / external) sit on a **side rail**
       off the main axis, dashed.
@@ -441,16 +646,42 @@ clear most of these:
 
 ## Correctness checklist (the floor — never skip)
 
-- [ ] Picked the right path (A unless B/C clearly fit).
+- [ ] Picked the right path (A unless B/C clearly fit); within Path A, defaulted to the
+      **icon-forward** node look unless a node genuinely needs a detail lane (§A.0b).
 - [ ] Root cells `0`,`1` present and first; all ids unique; every vertex has geometry.
 - [ ] Labels escaped; no literal `<`/`>` in label text.
 - [ ] Colour is semantic and consistent; **one** accent colour only.
+- [ ] **Every icon resolved via the Icon Selection Protocol** — a real stencil confirmed
+      (via `find_icon.py`) and chosen for intention, or an unmatched *branded* product given
+      its **official embedded logo** (via `fetch_logo.py`, self-contained `data:` URI) with
+      a flat brand chip only as fallback; every node keeps a label; **no guessed `resIcon`**
+      and **no external `image=http…`** reference (§A.3, icon-selection.md).
+- [ ] **Embedded logos actually render in draw.io, not just the validator** — two failure
+      modes the validator can't see: (1) the data URI must use draw.io's **comma form**
+      `image=data:<mime>,<b64>`, never `;base64,` — the style tokenizer splits on `;` and
+      truncates a `;base64` URI to a broken-image placeholder (even for a valid PNG);
+      (2) draw.io mishandles SVGs with no `width`/`height`, gradient `xlink:href`, `clipPath`,
+      or Inkscape cruft, so rasterize such marks to a **PNG** data URI. `fetch_logo.py` emits
+      the comma form; confirm the glyph actually shows (icon-selection.md).
+- [ ] **Text is legible on every fill** — each node has a `fontColor` that contrasts its
+      `fillColor` (dark-on-light / light-on-dark); validator reports no near-invisible text.
 - [ ] Grid-aligned, on a clear flow axis, ≤ ~40 cells/page.
 - [ ] **No overlaps:** no edge runs through a box it doesn't connect to; no two shapes
       partially overlap (full nesting is fine); labels sit in clear space (§A.4b).
 - [ ] On a live-system diagram, **every flow edge is animated** (`flowAnimation=1`); only
       static relationships are left un-animated (§A.5b) — verified by counting, not assumed.
+- [ ] **Challenged the design, not just the drawing** — for an architecture/system diagram,
+      ran the adversarial self-review pass (ideally an independent reviewer subagent) and
+      incorporated the verified findings: return paths present, no note contradicted by an edge,
+      no spurious/orphan components, boundary crossings mediated, edges obey protocol/endpoint
+      reality, HA/replication claims backed by actual edges. The validator proves the picture is
+      well-formed; this proves it's *correct* (cloud-architecture-stencils.md §8).
 - [ ] **Verified, not assumed (§A.7):** ran `validate_drawio.py` *this turn* and saw `[OK]`
       with no QUALITY warnings; confirmed the animation count; no completion claim was made
       before that evidence existed.
+- [ ] **Rendered a PNG and looked at it** (§A.7, `scripts/render_drawio.js`) for any
+      icon-forward or dense/infra diagram — confirmed real icons show glyphs (not blank
+      squares), captions don't wrap awkwardly, badges/zones don't crowd, and the
+      composition reads. (Embedded `data:` logos look broken in the proof but are fine in
+      real draw.io — don't chase those.)
 - [ ] Delivered as a clickable path with a one-paragraph read-me of the visual encoding.

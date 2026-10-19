@@ -1,0 +1,1 @@
+{"type": "assistant", "sessionId": "bot21", "requestId": "rb21", "timestamp": "2026-10-16T15:00:00Z", "message": {"id": "b21", "model": "claude-opus-5-5", "usage": {"input_tokens": 5, "cache_creation_input_tokens": 100000, "cache_read_input_tokens": 0, "output_tokens": 10}}}

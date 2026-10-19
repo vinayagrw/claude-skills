@@ -1,0 +1,6 @@
+{
+  "name": "firstmate-calm",
+  "version": "0.1.0",
+  "description": "A quieter transcript: hides finished tool rows and swaps the spinner word for a sailboat. Toggle with /calm.",
+  "types": "./types/index.d.ts"
+}

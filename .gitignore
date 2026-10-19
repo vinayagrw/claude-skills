@@ -216,3 +216,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local and generated
+.DS_Store
+.idea/
+node_modules/
+*-workspace/
+mods/*/.claude-plugin/types/

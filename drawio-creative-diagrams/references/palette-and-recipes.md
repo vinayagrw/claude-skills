@@ -22,7 +22,7 @@ Accent (for hot data paths / call-outs): orange `#e8732a` stroke, deep-blue head
 <mxCell id="banner" parent="1" vertex="1"
   style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#16294A;gradientColor=#2F5597;strokeColor=#0B1A33;fontColor=#FFFFFF;fontSize=20;align=center;verticalAlign=middle;shadow=1;"
   value="&lt;b&gt;System name&lt;/b&gt;&lt;br&gt;&lt;font color='#AFC6F0' size='1'&gt;one-line subtitle / status&lt;/font&gt;">
-  <mxGeometry x="40" y="24" width="1520" height="72" as="geometry" />
+  <mxGeometry x="40" y="20" width="1520" height="72" as="geometry" />
 </mxCell>
 ```
 

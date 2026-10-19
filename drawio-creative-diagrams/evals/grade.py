@@ -127,7 +127,38 @@ def grade_eval2(path, txt, root):
     return exp
 
 
-GRADERS = {"eval-0": grade_eval0, "eval-1": grade_eval1, "eval-2": grade_eval2}
+def grade_eval3(path, txt, root):
+    ok, line = validate(path)
+    exp = []
+    # Strict: an animated sequence must be fully clean — no off-grid, no box-crossing,
+    # no near-invisible contrast (the quality pass the recipe is built to satisfy).
+    clean = ok and "(0 warning(s))" in line
+    exp.append(("Valid .drawio with ZERO warnings (validator clean)", clean, line))
+    parts = ["browser", "api", "cognito", "token"]
+    np = mentions(txt, parts)
+    exp.append(("All 4 participants present", np >= 4, f"{np}/4 participant mentions"))
+    # Path A, not Mermaid: hand-authored floating edges use fixed sourcePoint.
+    path_a = "sourcePoint" in txt and "mermaid" not in txt.lower()
+    exp.append(("Hand-authored in Path A (floating edges, not Mermaid)", path_a,
+                "sourcePoint present" if path_a else "no floating edges / used Mermaid"))
+    # Lifelines: dashed floating edges that are NOT animated.
+    lifelines = sum(1 for c in cells(root) if c.get("edge") == "1"
+                    and "dashed=1" in (c.get("style") or "")
+                    and "endArrow=none" in (c.get("style") or ""))
+    exp.append((">=4 lifelines (dashed floating edges)", lifelines >= 4, f"{lifelines} lifelines"))
+    animated = txt.count("flowAnimation=1")
+    exp.append((">=5 animated message edges", animated >= 5, f"{animated} animated edges"))
+    has_frag = "loop" in txt.lower() and "alt" in txt.lower()
+    exp.append(("Has loop AND alt fragments", has_frag, "loop+alt found" if has_frag else "missing fragment"))
+    # Fragments as margin tabs, not an enclosing umlFrame.
+    no_frame = "umlframe" not in txt.lower()
+    exp.append(("No umlFrame (fragments as margin tabs)", no_frame,
+                "no umlFrame" if no_frame else "used umlFrame"))
+    return exp
+
+
+GRADERS = {"eval-0": grade_eval0, "eval-1": grade_eval1,
+           "eval-2": grade_eval2, "eval-3": grade_eval3}
 
 
 def main():
@@ -137,7 +168,7 @@ def main():
             outdir = os.path.join(run, "outputs")
             files = glob.glob(os.path.join(outdir, "*.drawio"))
             os.makedirs(run, exist_ok=True)
-            tok, ms = TIMING[(eval_id, cfg)]
+            tok, ms = TIMING.get((eval_id, cfg), (0, 0))
             with open(os.path.join(run, "timing.json"), "w", encoding="utf-8") as f:
                 json.dump({"total_tokens": tok, "duration_ms": ms,
                            "total_duration_seconds": round(ms / 1000, 1)}, f, indent=2)

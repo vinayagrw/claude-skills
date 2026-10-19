@@ -7,12 +7,13 @@ that turn a one-line idea — or a dense design doc — into polished, editable 
 diagrams that explain themselves, SVGs that actually move, beautiful Markdown, and
 review-ready design records.
 
-![Skills](https://img.shields.io/badge/skills-5-1971c2?style=flat-square)
+![Skills](https://img.shields.io/badge/skills-7-1971c2?style=flat-square)
+![Mods](https://img.shields.io/badge/mods-6-e8590c?style=flat-square)
 ![For Claude Code](https://img.shields.io/badge/for-Claude%20Code-d97757?style=flat-square)
 ![License](https://img.shields.io/badge/license-Apache--2.0-2f9e44?style=flat-square)
 ![PRs welcome](https://img.shields.io/badge/PRs-welcome-9c36b5?style=flat-square)
 
-[The skills](#-the-skills) · [Quick start](#-quick-start) · [Install](#-installation) · [How it works](#-how-skills-work) · [Contributing](#-contributing)
+[The skills](#-the-skills) · [Quick start](#-quick-start) · [Install](#-installation) · [How it works](#-how-skills-work) · [Mods](#-mods) · [Contributing](#-contributing)
 
 </div>
 
@@ -37,9 +38,14 @@ flowchart LR
     subgraph Docs["📝 Make something written"]
         D["markdown-craft"]
         E["tdr-author"]
+        F["architecture-decision-record"]
+    end
+    subgraph Sales["🤝 Prepare for a client"]
+        G["presales-meeting-prep"]
     end
     idea(["an idea, a spec,<br/>or a doc"]) --> Visuals
     idea --> Docs
+    idea --> Sales
 ```
 
 ## ✨ The skills
@@ -48,9 +54,11 @@ flowchart LR
 | :---- | :---------------- | :----------------- |
 | 📝 **[markdown-craft](markdown-craft/SKILL.md)** | Beautiful, platform-aware Markdown — hero headers, badges, `> [!NOTE]` callouts, `<details>`, Mermaid, dark/light logos | "write a README for X", "make this doc look good on GitHub", any `.md` you want to *not* look like a wall of text |
 | 🎬 **[creative-animated-svg](creative-animated-svg/SKILL.md)** | SVGs that genuinely **move** — self-drawing line art, flow-along-path, morphs, gooey/turbulence filters, loaders, hero graphics | "animate this", an SVG logo/loader/banner, a draw-on diagram, a scroll-reveal |
-| 📐 **[drawio-creative-diagrams](drawio-creative-diagrams/SKILL.md)** | Polished, fully-editable **draw.io** `.drawio` files — gradient lanes, semantic colour, animated flow edges, HTML-table nodes | "diagram this architecture", "turn this spec into a picture", anything you'll keep editing in diagrams.net |
+| 📐 **[drawio-creative-diagrams](drawio-creative-diagrams/SKILL.md)** | Polished, fully-editable **draw.io** `.drawio` files with an icon-forward look: real AWS, Azure and GCP icons at 80px and up, soft trust zones, gradient lanes, meaning-bearing edges, plus icon search, logo fetch and PNG proofing scripts | "diagram this architecture", "turn this spec into a picture", anything you'll keep editing in diagrams.net |
 | ✏️ **[excalidraw-creative-diagrams](excalidraw-creative-diagrams/SKILL.md)** | Hand-drawn **Excalidraw** `.excalidraw` scenes — sketchy charm, sticky-notes, frames, switchable sketch/clean mode, draw-on animation | "sketch this", "whiteboard this idea", a wireframe, a hand-drawn figure |
 | 📋 **[tdr-author](tdr-author/SKILL.md)** | Decision-first **Technical Design Records** — rationale, rejected alternatives, gap audit, Confluence-paste-safe ASCII | "write up the design for X", "document this decision", "a spec the team can review" |
+| 🏛️ **[architecture-decision-record](architecture-decision-record/SKILL.md)** | An ADR in the ADP template: context, drivers, options, trade-off, outcome, consequences and risks, ready to paste into Confluence | "write an ADR", "record this decision" |
+| 🤝 **[presales-meeting-prep](presales-meeting-prep/SKILL.md)** | A sourced research folder and meeting brief built in waves: identity check, company, leaders, hiring, competitors, today vs target architecture, top challenges, AI opportunities, roadmap, red team and a verification log | "prepare for a meeting with X", "research this company" |
 
 > [!NOTE]
 > Each skill is self-contained: a `SKILL.md` playbook, a `references/` folder of deep-dive
@@ -58,7 +66,7 @@ flowchart LR
 
 ## 🚀 Quick start
 
-Install **all five** skills into your personal Claude Code skills folder, then start (or
+Install **all seven** skills into your personal Claude Code skills folder, then start (or
 restart) Claude Code — they load automatically.
 
 <details open>
@@ -67,7 +75,7 @@ restart) Claude Code — they load automatically.
 ```bash
 git clone https://github.com/vinayagrw/claude-skills.git
 mkdir -p ~/.claude/skills
-cp -r claude-skills/*/ ~/.claude/skills/
+rsync -a --exclude mods --exclude '*-workspace' claude-skills/*/ ~/.claude/skills/
 ```
 
 </details>
@@ -79,6 +87,7 @@ cp -r claude-skills/*/ ~/.claude/skills/
 git clone https://github.com/vinayagrw/claude-skills.git
 New-Item -ItemType Directory -Force "$HOME\.claude\skills" | Out-Null
 Get-ChildItem claude-skills -Directory |
+  Where-Object { $_.Name -ne 'mods' -and $_.Name -notlike '*-workspace' } |
   Copy-Item -Destination "$HOME\.claude\skills" -Recurse -Force
 ```
 
@@ -169,6 +178,10 @@ Two ways a skill fires:
 > [!TIP]
 > Not sure a skill loaded? Just ask Claude *"which skills do you have available?"* — installed
 > skills show up in its skill list once they're in `~/.claude/skills/`.
+
+## 🧩 Mods
+
+The [`mods/`](mods/README.md) folder holds six Claude Code mods: small plugins that change the app itself, such as a usage band above the prompt, suggested next steps after each reply and a `/insights` token report. They came out of an audit of my own usage. See [mods/README.md](mods/README.md) for what each one does and how to build and install them.
 
 ## 🔍 Skill details
 

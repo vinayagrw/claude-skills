@@ -1,0 +1,6 @@
+{
+  "name": "context-lens",
+  "version": "0.1.0",
+  "description": "/lens shows what fills the context window: each category as a bar, the heaviest skills, memory files and MCP tools, and the biggest tool results this session.",
+  "types": "./types/index.d.ts"
+}

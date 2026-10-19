@@ -12,6 +12,10 @@ Catches the failure modes that make a draw.io file refuse to open or render wron
   - labels that look mis-escaped (raw <, &) in html labels
   - off-grid coordinates (warning only)
 
+Quality pass treats a translucent backdrop (opacity<=40) as an intentional
+'plane'/zone tint that may span behind and across other shapes — so the Data/Control
+plane bands of a multi-AZ cloud diagram don't false-flag as collisions.
+
 Note on label escaping: this script parses with ElementTree, which only succeeds if
 the file is well-formed XML. A raw, unescaped '<' inside a label attribute is itself a
 parse error, so "well-formed XML" already guarantees labels are correctly escaped — no
@@ -58,6 +62,18 @@ def _partial_overlap(a, b, min_px=6):
     return not (_contains(a, b) or _contains(b, a))
 
 
+def _is_backdrop(style, max_opacity=40):
+    """A translucent 'plane' / zone-tint backdrop is *meant* to sit behind other
+    shapes and be overlapped and crossed — e.g. the Data-Plane / Control-Plane
+    bands in a multi-AZ cloud diagram, which deliberately span across the AZ-row
+    and subnet containers (a 2-axis grid a single-parent tree can't express).
+    Authors mark these with a low opacity (opacity<=40); we then exempt them from
+    the partial-overlap error and the edge-crossing warning. A genuine collision
+    between opaque shapes is still caught."""
+    m = re.search(r"opacity=([0-9.]+)", style or "")
+    return m is not None and float(m.group(1)) <= max_opacity
+
+
 def _seg_hits_rect(x0, y0, x1, y1, rect, pad=8):
     """Liang–Barsky: does segment (x0,y0)->(x1,y1) cross rect (shrunk by pad)?"""
     rx, ry, rw, rh = rect
@@ -83,6 +99,30 @@ def _seg_hits_rect(x0, y0, x1, y1, rect, pad=8):
 
 def _center(r):
     return (r[0] + r[2] / 2, r[1] + r[3] / 2)
+
+
+def _lum(hexstr):
+    """WCAG relative luminance of a #rrggbb colour."""
+    h = hexstr.lstrip("#")
+    rgb = [int(h[i:i + 2], 16) / 255.0 for i in (0, 2, 4)]
+
+    def lin(c):
+        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+
+    r, g, b = (lin(c) for c in rgb)
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def _contrast(c1, c2):
+    """WCAG contrast ratio (1.0 = identical, 21.0 = black-on-white)."""
+    l1, l2 = _lum(c1), _lum(c2)
+    hi, lo = max(l1, l2), min(l1, l2)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def _style_hex(style, key):
+    m = re.search(key + r"=(#[0-9a-fA-F]{6})\b", style or "")
+    return m.group(1) if m else None
 
 
 def validate(path):
@@ -140,6 +180,7 @@ def validate(path):
             )
 
         vboxes = {}        # eff_id -> rect, for quality overlap checks
+        vstyle = {}        # eff_id -> style string, for backdrop/plane detection
         edge_list = []     # (eff_id, source, target)
         for c in cells:
             cid = eff_id(c)
@@ -162,6 +203,7 @@ def validate(path):
                     r = _rect(geom)
                     if r:
                         vboxes[cid] = r
+                        vstyle[cid] = c.get("style") or ""
                     for dim in ("width", "height"):
                         v = geom.get(dim)
                         if v is None:
@@ -194,14 +236,43 @@ def validate(path):
                 if src and tgt:
                     edge_list.append((cid, src, tgt, c.get("style") or "", geom))
 
+        # ---- Resolve nested (parent-relative) geometry to ABSOLUTE coords -----
+        # A child cell's <mxGeometry> is relative to its container's origin. The
+        # quality pass below reasons about absolute positions, so without this a
+        # nested child (e.g. an icon at rel x=20 inside a zone at x=900) is misread
+        # as sitting at x=20 top-level — producing a flood of false-positive
+        # "overlap"/"crosses box" reports. Walk each vertex's parent chain and add
+        # ancestor offsets so containers and their children are compared correctly.
+        parent_of = {eff_id(c): c.get("parent") for c in cells}
+
+        def _abs(cid):
+            r = vboxes.get(cid)
+            if r is None:
+                return None
+            x, y, w, h = r
+            p, seen = parent_of.get(cid), set()
+            while p in vboxes and p not in seen:   # stops at id '1'/'0' (no geometry)
+                seen.add(p)
+                x += vboxes[p][0]
+                y += vboxes[p][1]
+                p = parent_of.get(p)
+            return (x, y, w, h)
+
+        vboxes = {cid: _abs(cid) for cid in vboxes}
+
         # ---- QUALITY PASS: anti-overlap checks --------------------------------
         # (1) Two boxes that partially overlap (not full containment) almost always
         #     means colliding shapes — a real layout bug. Reported as an error.
+        #     Exception: a translucent 'plane'/zone-tint backdrop (opacity<=40) is
+        #     meant to span behind other shapes (see _is_backdrop), so a partial
+        #     overlap involving one is intentional and not flagged.
         items = list(vboxes.items())
         for i in range(len(items)):
             ida, ra = items[i]
             for j in range(i + 1, len(items)):
                 idb, rb = items[j]
+                if _is_backdrop(vstyle.get(ida, "")) or _is_backdrop(vstyle.get(idb, "")):
+                    continue
                 if _partial_overlap(ra, rb):
                     errors.append(
                         f"[{page}] QUALITY: boxes '{ida}' and '{idb}' overlap "
@@ -239,6 +310,8 @@ def validate(path):
                 for vid, r in vboxes.items():
                     if vid in (s, t) or vid in flagged:
                         continue
+                    if _is_backdrop(vstyle.get(vid, "")):
+                        continue  # a plane/zone backdrop is meant to be crossed
                     if _contains(r, vboxes[s]) or _contains(r, vboxes[t]):
                         continue  # box is a container of an endpoint
                     if _contains(vboxes[s], r) or _contains(vboxes[t], r):
@@ -249,6 +322,62 @@ def validate(path):
                             f"[{page}] QUALITY: edge '{eid}' ({s}->{t}) likely crosses box "
                             f"'{vid}' — add waypoints, route via a gutter, or pick exit/entry faces"
                         )
+
+        # (3) Low text/fill contrast = near-invisible labels (the light-on-light /
+        #     dark-on-dark bug). Only meaningful when the fill is an explicit hex; the
+        #     effective font defaults to draw.io's near-black (#000000) when unset, so a
+        #     dark fill with no fontColor is correctly caught too.
+        CONTRAST_MIN = 2.5
+        for c in cells:
+            if c.get("vertex") != "1":
+                continue
+            style = c.get("style") or ""
+            fill = _style_hex(style, "fillColor")
+            if not fill:
+                continue
+            # Skip shapes whose label renders OUTSIDE the fill (icon stencils, actors:
+            # verticalLabelPosition=top/bottom or labelPosition=left/right). There the
+            # label sits on the page background, not the fill, so a fill-vs-font ratio
+            # is meaningless and would false-positive on dark icons with dark captions.
+            if re.search(r"verticalLabelPosition=(top|bottom)", style) or \
+               re.search(r"labelPosition=(left|right)", style):
+                continue
+            font = _style_hex(style, "fontColor") or "#000000"
+            ratio = _contrast(fill, font)
+            if ratio < CONTRAST_MIN:
+                warnings.append(
+                    f"[{page}] QUALITY: cell '{eff_id(c)}' has near-invisible text "
+                    f"(fill {fill} vs font {font}, contrast {ratio:.2f}:1) — give it a "
+                    f"fontColor that contrasts the fill (dark text on light fills, "
+                    f"light text only on dark fills)"
+                )
+
+        # Icon-size quality check (WARNING only): icons must read large.
+        # Stencil/image/resourceIcon cells >= 80px; emoji/glyph font-size >= 64px.
+        ICON_MIN_PX, GLYPH_MIN_PX = 80, 64
+        glyph_re = re.compile(
+            r"font-size:\s*(\d+(?:\.\d+)?)px[^>]*>\s*([^\x00-\x7F<][^<]{0,3})\s*<", re.I)
+        for c in cells:
+            if c.get("vertex") != "1":
+                continue
+            cid = eff_id(c)
+            style = c.get("style") or ""
+            r = vboxes.get(cid)
+            iconish = (("resourceIcon" in style or re.search(r"(^|;)(shape=)?image(;|=|$)", style)
+                        or re.search(r"shape=mxgraph\.(aws|azure|gcp|kubernetes|cisco|network|ibm|alibaba)", style))
+                       and not re.search(r"shape=mxgraph\.\w+\.group|container=1|swimlane", style))
+            if iconish and r and min(r[2], r[3]) < ICON_MIN_PX:
+                warnings.append(
+                    f"[{page}] QUALITY: icon '{cid}' is {r[2]:g}x{r[3]:g} — icons must be "
+                    f">= {ICON_MIN_PX}x{ICON_MIN_PX}; enlarge it and widen spacing/zones (don't shrink)"
+                )
+            for m in glyph_re.finditer(c.get("value") or ""):
+                if float(m.group(1)) < GLYPH_MIN_PX:
+                    warnings.append(
+                        f"[{page}] QUALITY: glyph icon in '{cid}' uses font-size {m.group(1)}px — "
+                        f"use >= {GLYPH_MIN_PX}px (72px on hero diagrams)"
+                    )
+                    break
 
     return errors, warnings
 

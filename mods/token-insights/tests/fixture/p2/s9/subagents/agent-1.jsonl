@@ -1,0 +1,1 @@
+{"type": "assistant", "sessionId": "s9", "requestId": "rx4", "timestamp": "2026-10-17T14:00:30Z", "message": {"id": "x4", "model": "claude-opus-5-5", "content": [{"type": "text", "text": "hi"}], "usage": {"input_tokens": 5, "cache_creation_input_tokens": 0, "cache_read_input_tokens": 20000, "output_tokens": 10}}}

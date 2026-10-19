@@ -1,0 +1,6 @@
+{
+  "name": "cache-tax",
+  "version": "0.1.0",
+  "description": "Holds the first prompt sent after the prompt cache has gone cold and shows what re-sending the context will cost; press Enter again to send it.",
+  "types": "./types/index.d.ts"
+}
