@@ -21,3 +21,6 @@ Load `artifact-design` first. Treat the page as a product, visual first with lit
 - Screenshot each toggle and tab state at desktop and phone width before publishing.
 - Keep the same artifact URL on republish, pass `url` if the file path changed.
 - Run the em dash and semicolon gate on visible text.
+
+## Icon system
+Use `assets/solid-tile-icons.svg` (see `assets/README.md`) for every icon. Inline the sprite and reference it with `<use href="#i-name">`. Use no emoji. Labels are 3 words or fewer, and the detail goes in tooltips.

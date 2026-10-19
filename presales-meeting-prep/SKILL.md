@@ -46,6 +46,7 @@ Write `00-meeting-brief.md` from `references/brief-template.md`.
 ## 4. Optional outputs
 Offer these early, build only on a yes:
 - **HTML brief** as an Artifact. Load `artifact-design` first, then follow `references/html-template-notes.md`.
+- **Visual style:** when the user says yes to the HTML brief, deck or architecture diagram, ask once for a style from `references/visual-styles.md` (A Duotone line, B Isometric, C Solid glyph tiles, D Blueprint, plus 1 or 2 extras, recommended first) and use it for every visual in the pack.
 - **Pitch deck** via `Artifact` quickstart `intent: slides`, outline in `references/deck-outline.md`. List every slide number and title on delivery.
 - **Technical primer** (`07-technical-primer.md`): glossary of every term of art, why each discovery question is asked, what good and bad answers sound like, pains in plain English.
 - **Others:** leadership deck, exec memo, talk track, stakeholder map, KPI dictionary, capability or feature catalogue (top N with user stories, value and ROI), bid gap register, ROI page, architecture diagram (draw.io), objection drill, follow-up email draft.

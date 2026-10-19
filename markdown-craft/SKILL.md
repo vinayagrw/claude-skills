@@ -104,6 +104,7 @@ just more decorated. (Syntax + caveats for all of them: the cookbook.)
   "show me the full example". Keeps the default view short while the depth stays one click away.
 - **Mermaid** — a `flowchart`/`sequenceDiagram`/`gitGraph` in a fenced block renders as a
   real diagram on GitHub/GitLab with zero image files. Best for architecture, flows, states.
+- **Diagram style:** when a doc needs a diagram image (draw.io or SVG, not Mermaid or ASCII), hand it to the diagram skill, which first asks the user to pick a visual style (duotone, isometric, solid tiles, blueprint or another).
 - **ASCII diagrams & trees** — box-drawing art (`┌─┐ ├ │`) in a plain code fence is the *one*
   diagram that renders identically **everywhere**, npm/PyPI included. Reach for it for file
   trees, layered stacks, and as the portable fallback when Mermaid won't render on the target.

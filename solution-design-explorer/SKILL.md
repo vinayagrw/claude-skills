@@ -102,6 +102,8 @@ After drafting the recommendation, **attack it.** Write a critique section that 
 
 Every major structural idea gets a **Mermaid diagram** — architecture, data/diff flows, confidence gating, each design pattern, the composite, the decision tree. Mermaid renders on GitHub and in most viewers and is editable, which beats static images.
 
+Before drawing, **ask the user once for a visual style** from `references/visual-styles.md` (A Duotone line, B Isometric, C Solid glyph tiles, D Blueprint, plus 1 or 2 extras that fit, recommended first). Skip the question if a style was already named or saved. Apply it through Mermaid `classDef` as the file describes, and use the same style for any draw.io or SVG diagram you hand to another skill.
+
 Use the conventions and color legend in `references/mermaid-cookbook.md`. **Render-validate every diagram** before finishing — a broken diagram in a client-facing doc is worse than no diagram. Run:
 
 ```

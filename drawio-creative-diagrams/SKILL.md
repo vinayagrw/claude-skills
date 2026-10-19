@@ -73,6 +73,21 @@ Work it in three quick beats:
 Only once you know *what shape tells this story* do you drop down to choosing a path and
 emitting cells. Spend the thinking here; the rest is execution.
 
+## Step 0b: Pick a visual style with the user
+
+Do not choose the icon look silently. Before building, offer a short list of styles from
+`references/visual-styles.md` and build in the one the user picks:
+
+- Always offer **A Duotone line**, **B Isometric**, **C Solid glyph tiles** and **D Blueprint**,
+  plus 1 or 2 extras from E to H that fit this request (E Official vendor icons, F Hand-drawn
+  sketch, G Gradient glass, H Mono outline). The table "Pick extras by request" says which.
+- Ask once with `AskUserQuestion`, recommended style first. Add a 6-icon sample strip as the
+  option preview when the host supports previews.
+- Skip the question when the user already named a style, memory holds a saved style, or the
+  run is non-interactive. Then use the recommended style and say which one.
+- Put the chosen style in the legend or footer.
+- For **E**, use `references/cloud-architecture-stencils.md`. For **F**, add `sketch=1` to every cell or hand off to the Excalidraw skill. The icon-forward layout stays the default: the style only changes how each icon is drawn.
+
 ## Pick the authoring path first
 
 Most diagrams → **Path A (hand-authored mxGraph XML)**. It's the most expressive and

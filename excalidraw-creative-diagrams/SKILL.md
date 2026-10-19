@@ -54,6 +54,21 @@ remember. The creativity lives in the framing, not the colours.
 
 Only once you know *what shape tells this story* do you start emitting elements.
 
+## Step 0b: Pick a visual style with the user
+
+Do not choose the icon look silently. Before building, offer a short list of styles from
+`references/visual-styles.md` and build in the one the user picks:
+
+- Always offer **A Duotone line**, **B Isometric**, **C Solid glyph tiles** and **D Blueprint**,
+  plus 1 or 2 extras from E to H that fit this request (E Official vendor icons, F Hand-drawn
+  sketch, G Gradient glass, H Mono outline). The table "Pick extras by request" says which.
+- Ask once with `AskUserQuestion`, recommended style first. Add a 6-icon sample strip as the
+  option preview when the host supports previews.
+- Skip the question when the user already named a style, memory holds a saved style, or the
+  run is non-interactive. Then use the recommended style and say which one.
+- Put the chosen style in the legend or footer.
+- Here **F Hand-drawn sketch** is the natural recommendation for brainstorms. For clean architecture, recommend C or D and use clean mode (§3).
+
 ## 1. The scene skeleton (non-negotiable)
 
 An `.excalidraw` file is a single JSON object. Get this shell exactly right or it

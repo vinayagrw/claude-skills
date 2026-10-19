@@ -1,0 +1,16 @@
+<!doctype html><meta charset="utf-8"><title>Style strip</title>
+<style>body{background:#161616;color:#eee;font:14px system-ui;margin:20px}h3{margin:18px 0 6px}.row{display:flex;gap:28px}svg{width:96px;height:96px}</style>
+<body><div id="o"></div>
+<script>
+const G={doc:'<path d="M-12-16h16l8 8v24h-24z M-6-4h12 M-6 3h12 M-6 10h8"/>',db:'<ellipse cx="0" cy="-10" rx="13" ry="5"/><path d="M-13-10v20c0 7 26 7 26 0v-20 M-13 0c0 7 26 7 26 0"/>',code:'<path d="M-8-10l-10 10 10 10 M8-10l10 10-10 10 M4-14l-8 28"/>',spark:'<path d="M0-16q3 13 16 16q-13 3-16 16q-3-13-16-16q13-3 16-16z"/>',flow:'<path d="M-16-8h28 M-16 0h28 M-16 8h28 M6-14l8 6-8 6 M6 2l8 6-8 6"/>',rec:'<path d="M-11-16h22v32l-5-4-6 4-6-4-5 4z M-5-6h10 M-5 2h10"/>'};
+const S={
+A:['Duotone line',g=>`<circle cx="48" cy="48" r="30" fill="#A7E8CF"/><g transform="translate(52 44)" fill="none" stroke="#0B6E4F" stroke-width="3" stroke-linejoin="round">${g}</g>`],
+B:['Isometric',g=>`<polygon points="48,22 84,40 48,58 12,40" fill="#B3ADF2"/><polygon points="12,40 48,58 48,86 12,68" fill="#8F86E8"/><polygon points="84,40 48,58 48,86 84,68" fill="#5F55C9"/><g transform="translate(48 40) scale(.6)" fill="none" stroke="#2E2873" stroke-width="3.5">${g}</g>`],
+C:['Solid glyph tiles',(g,i)=>`<rect x="8" y="8" width="80" height="80" rx="18" fill="${['#1E9E6E','#E05A2B','#4B47B8'][i%3]}"/><g transform="translate(48 48)" fill="none" stroke="#fff" stroke-width="3.5" stroke-linejoin="round">${g}</g>`],
+D:['Blueprint',g=>`<defs><pattern id="gr" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M8 0H0V8" fill="none" stroke="#C9DDF2"/></pattern></defs><rect x="8" y="8" width="80" height="80" rx="4" fill="#EAF3FC"/><rect x="8" y="8" width="80" height="80" rx="4" fill="url(#gr)" stroke="#0E3F7A"/><path d="M74 13h10" stroke="#0E3F7A" stroke-dasharray="3 2"/><g transform="translate(48 48)" fill="none" stroke="#0E3F7A" stroke-width="2.5">${g}</g>`],
+F:['Hand-drawn sketch',(g,i)=>`<path d="M12 14 L86 10 L84 86 L10 84 Z" fill="${['#FFE9A8','#C3F0CA','#BDE0FE'][i%3]}" stroke="#1E1E1E" stroke-width="2"/><g transform="translate(48 48) rotate(-3)" fill="none" stroke="#1E1E1E" stroke-width="3">${g}</g>`],
+G:['Gradient glass',g=>`<defs><linearGradient id="lg" x2="0" y2="1"><stop stop-color="#6A5AE0"/><stop offset="1" stop-color="#C04FD8"/></linearGradient></defs><rect x="8" y="8" width="80" height="80" rx="20" fill="url(#lg)" style="filter:drop-shadow(0 6px 12px rgb(106 90 224/.45))"/><g transform="translate(48 48)" fill="none" stroke="#fff" stroke-width="3.5">${g}</g>`],
+H:['Mono outline',g=>`<g transform="translate(48 48) scale(1.3)" fill="none" stroke="#e5e7eb" stroke-width="2">${g}</g>`]};
+let h='';for(const[k,[n,f]]of Object.entries(S)){h+=`<h3>${k} · ${n}</h3><div class=row>`+Object.values(G).map((g,i)=>`<svg viewBox="0 0 96 96">${f(g,i)}</svg>`).join('')+'</div>'}
+document.getElementById('o').innerHTML=h;
+</script>

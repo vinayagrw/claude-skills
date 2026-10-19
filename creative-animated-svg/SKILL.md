@@ -55,6 +55,21 @@ Then decide the **trigger**: plays-on-load loop (most SVGs), one-shot on open, s
 (needs HTML host), or interaction (hover/click). Trigger + target (§1) together decide which
 techniques are even available — so settle them now, before authoring.
 
+## Step 0b: Pick a visual style with the user
+
+Do not choose the icon look silently. Before building, offer a short list of styles from
+`references/visual-styles.md` and build in the one the user picks:
+
+- Always offer **A Duotone line**, **B Isometric**, **C Solid glyph tiles** and **D Blueprint**,
+  plus 1 or 2 extras from E to H that fit this request (E Official vendor icons, F Hand-drawn
+  sketch, G Gradient glass, H Mono outline). The table "Pick extras by request" says which.
+- Ask once with `AskUserQuestion`, recommended style first. Add a 6-icon sample strip as the
+  option preview when the host supports previews.
+- Skip the question when the user already named a style, memory holds a saved style, or the
+  run is non-interactive. Then use the recommended style and say which one.
+- Put the chosen style in the legend or footer.
+- Ask only when the SVG has icons or diagram nodes. A pure loader, background or logo animation needs no style question.
+
 ## 1. Pick the delivery target — it decides which features you can use
 
 This is a real fork, not a formality. **The same .svg behaves completely differently
