@@ -5,11 +5,11 @@
 **A curated collection of [Claude Code](https://docs.claude.com/en/docs/claude-code) skills**
 that turn a one-line idea — or a dense design doc — into polished, editable artifacts:
 diagrams that explain themselves, SVGs that actually move, beautiful Markdown, and
-review-ready design records. Plus **six mods** that make Claude Code itself show
+review-ready design records. Plus **ten mods** that make Claude Code itself show
 your usage, suggest next steps and warn before costly prompts.
 
-![Skills](https://img.shields.io/badge/skills-12-1971c2?style=flat-square)
-![Mods](https://img.shields.io/badge/mods-6-e8590c?style=flat-square)
+![Skills](https://img.shields.io/badge/skills-13-1971c2?style=flat-square)
+![Mods](https://img.shields.io/badge/mods-10-e8590c?style=flat-square)
 ![For Claude Code](https://img.shields.io/badge/for-Claude%20Code-d97757?style=flat-square)
 ![License](https://img.shields.io/badge/license-Apache--2.0-2f9e44?style=flat-square)
 ![PRs welcome](https://img.shields.io/badge/PRs-welcome-9c36b5?style=flat-square)
@@ -69,6 +69,7 @@ flowchart LR
 | 🎯 **[deal-qualification-desk](deal-qualification-desk/SKILL.md)** | Market research, personas, lead lists, MEDDPICC-style scoring, two-lane SE routing and a 30-day pilot tracker | "qualify these deals", "where should SEs spend time" |
 | 🤝 **[presales-meeting-prep](presales-meeting-prep/SKILL.md)** | A sourced research folder and meeting brief built in waves: identity check, company, leaders, hiring, competitors, today vs target architecture, top challenges, AI opportunities, roadmap, red team and a verification log | "prepare for a meeting with X", "research this company", "write the call script" |
 | 🧭 **[solution-design-explorer](solution-design-explorer/SKILL.md)** | Deep, research-backed **solution-architecture deep-dives** — surveys how the field solves it, multi-persona reasoning, pattern comparison, self red-team, SOTA refresh, a recommendation | "architect a solution for X", "how does the industry do this?", "find the top N approaches and recommend one" |
+| 💸 **[llm-finops](llm-finops/SKILL.md)** | FinOps for LLM software: cost metering from the first commit, model choice, caching and budgets, both while you build and after it ships | "add an AI feature", "build a chatbot or RAG pipeline", "why is our LLM bill so high" |
 
 > [!NOTE]
 > Each skill is self-contained: a `SKILL.md` playbook, a `references/` folder of deep-dive
@@ -76,7 +77,7 @@ flowchart LR
 
 ## 🚀 Quick start
 
-Install **all twelve** skills into your personal Claude Code skills folder, then start (or
+Install **all thirteen** skills into your personal Claude Code skills folder, then start (or
 restart) Claude Code — they load automatically.
 
 <details open>
@@ -193,7 +194,7 @@ Two ways a skill fires:
 
 > [!TIP]
 > **Skills change what Claude does. Mods change the app you work in.** This repo ships both.
-> The six mods live in [`mods/`](mods/README.md) and install as one marketplace named `my-mods`.
+> The ten mods live in [`mods/`](mods/README.md) and install as one marketplace named `my-mods`.
 
 ### Skill or mod?
 
@@ -214,7 +215,7 @@ flowchart LR
     M --> U
 ```
 
-### The six mods
+### The ten mods
 
 | Mod | In one line | Try |
 | :-- | :-- | :-- |
@@ -224,6 +225,10 @@ flowchart LR
 | 🔍 **[context-lens](mods/context-lens)** | Bars showing what fills the context window, biggest first | `/lens` |
 | 📈 **[token-insights](mods/token-insights)** | A token report for today, a week, a month or any date range | `/insights week` |
 | ⛵ **[firstmate-calm](mods/firstmate-calm)** | A quieter transcript with a sailboat spinner | `/calm` |
+| 🛫 **[flightdeck](mods/flightdeck)** | A live pane of context, limits, cost, cache, tool calls and subagents | `/flightdeck` |
+| ✍️ **[house-style](mods/house-style)** | Your style rules in every session, em-dashes caught before they are written | `/house-style` |
+| 🔁 **[loop-watch](mods/loop-watch)** | Warns when a project keeps starting sessions on its own | `/loop-watch` |
+| ⏪ **[time-machine](mods/time-machine)** | Snapshots files before each edit, with a timeline, diff and restore | `/rewind` |
 
 ### Why they exist
 

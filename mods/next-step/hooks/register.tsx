@@ -16,12 +16,14 @@ const picked = atom({ plugin: 'next-step', key: 'picked' } as const, [])
 
 // The follow-ups typed most often across the audited sessions.
 const USUAL = {
-  audit: { label: 'Audit gaps', prompt: 'Audit what we just did: what have we missed? List gaps and fix them.' },
-  truth: { label: 'Truthiness check', prompt: 'Run a completeness, correctness and truthiness check in parallel and report what is wrong.' },
-  challenge: { label: 'Challenge approach', prompt: 'Challenge your approach from multiple personas and find the gaps.' },
-  visuals: { label: 'More visuals', prompt: 'Make it more visual with less text.' },
-  where: { label: 'What changed where', prompt: 'List exactly what you added or changed and where (file, slide or section).' },
-  simplify: { label: 'Simplify wording', prompt: 'Simplify the wording to layman terms.' },
+  audit: { label: 'Audit gaps', prompt: 'Check the last result against my original ask. List only real gaps, most serious first, then fix them. Skip style nitpicks.' },
+  truth: { label: 'Truthiness check', prompt: 'Use a fresh subagent to check every fact and number against its source. Mark each verified, unverified or wrong, with where it looked. Fix the wrong ones.' },
+  challenge: { label: 'Challenge approach', prompt: 'Argue against this as a sceptical client, an engineer and a CFO. Give the 3 strongest objections and what you would change. No praise.' },
+  visuals: { label: 'More visuals', prompt: 'Turn the densest section into a diagram or table. Cut the text by half and keep every number.' },
+  where: { label: 'What changed where', prompt: 'Report as: Changed (file or slide, one line each), Not done, Blocked on me.' },
+  simplify: { label: 'Simplify wording', prompt: 'Rewrite for a non-technical manager. Short sentences, no jargon, same meaning.' },
+  brief: { label: 'Session brief', prompt: 'Context: <project, client, audience>. Goal: <one line>. Done when: <test>. Use subagents for research and checks. Ask me up to 3 questions first if the goal is unclear, otherwise start.' },
+  resume: { label: 'Resume', prompt: 'Pick up where we stopped. In 3 lines: what is done, what is next, anything blocked on me. Then carry on without redoing finished work.' },
 } satisfies Record<string, Suggestion>
 
 export const freeSuggestions = (answer: string): Suggestion[] => {
@@ -32,16 +34,21 @@ export const freeSuggestions = (answer: string): Suggestion[] => {
   if (has('slide', 'deck', 'pptx', '.html', 'artifact', 'page', 'diagram')) picks.push(USUAL.visuals, USUAL.where)
   if (has('design', 'architecture', 'approach', 'proposal', 'plan')) picks.push(USUAL.challenge)
   if (has('built', 'created', 'added', 'wrote', 'updated', 'installed', 'done')) picks.push(USUAL.audit, USUAL.truth)
+  if (has('how can i help', 'what would you like', 'what are we working on')) picks.unshift(USUAL.brief)
+  if (has('limit reached', 'interrupted', 'stopped', 'timed out')) picks.unshift(USUAL.resume)
   picks.push(USUAL.audit, USUAL.truth, USUAL.simplify)
 
   return [...new Map(picks.map(one => [one.label, one])).values()].slice(0, 3)
 }
 
 const ASK = `You suggest the user's next prompt to a coding and pre-sales assistant.
+The user ticks one or more suggestions and sends them as they are, so each prompt must stand alone and say what "done" looks like.
 Read the assistant's last reply and return ONLY a JSON array of exactly 3 objects {"label": string, "prompt": string}.
-label: 2 to 4 words. prompt: one sentence the user would send next.
+label: 2 to 4 words. prompt: one or two short sentences.
+Avoid vague asks ("improve it", "make it better"), repeats of work the reply says is done, and praise.
 Prefer these habits of this user when they fit: ${Object.values(USUAL).map(one => one.prompt).join(' | ')}
-If the reply asks the user a question, make the first suggestion a sensible answer to it.`
+If the reply asks the user a question, make the first suggestion a sensible answer to it.
+Example: [{"label":"Fix slide 4 gap","prompt":"Add the missing pricing row to slide 4 and say which source it came from."},{"label":"Truthiness check","prompt":"Use a fresh subagent to check every number on the new slides against its source and fix any that are wrong."},{"label":"What changed where","prompt":"Report as: Changed, Not done, Blocked on me."}]`
 
 export const parseSuggestions = (text: string): Suggestion[] | null => {
   const start = text.indexOf('[')

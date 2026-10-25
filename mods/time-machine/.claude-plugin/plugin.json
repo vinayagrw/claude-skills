@@ -1,0 +1,6 @@
+{
+  "name": "time-machine",
+  "version": "0.1.0",
+  "description": "Snapshots every file before Claude edits it; /rewind shows a timeline by turn with diff and restore.",
+  "types": "./types/index.d.ts"
+}

@@ -1,0 +1,6 @@
+{
+  "name": "loop-watch",
+  "version": "0.1.0",
+  "description": "Warns when a project keeps starting sessions on its own, such as a scheduled job or keep-alive loop burning tokens.",
+  "types": "./types/index.d.ts"
+}

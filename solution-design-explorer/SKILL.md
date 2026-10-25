@@ -53,11 +53,13 @@ This is the backbone. Spawn **subagents in parallel** (one message, multiple `Ag
 - **Strand C — Last ~2 months of state of the art.** What changed recently — new models, frameworks, specs, benchmarks, launches. Date-stamp findings. This is the single most common gap in design docs and a strong differentiator.
 - **Strand D (optional) — Reliability/eval/security** or another axis the topic demands.
 
-Have each subagent return a **markdown brief** (not a rigid JSON schema — rigid schemas have failed here before; free-form briefs are more robust). Tell each one to cite sources and flag confidence.
+If the user has opted into multi-agent orchestration, use the Workflow variant in the playbook. It runs the strands and adversarial verification as one pipeline. Otherwise, have each subagent return a **markdown brief** (not a rigid JSON schema — rigid schemas have failed here before; free-form briefs are more robust). Tell each one to cite sources and flag confidence. Then run opened-page verification (playbook) on the returned claims before Step 2.
 
 **Research discipline (this is what separates a credible doc from a slide of vendor claims):**
+- **Verify by opening the page.** A separate verifier opens every source behind a number, regulator, date or named company and records whether it supports the claim. Unopened claims sit on the bottom rung. See "Opened-page verification" in the playbook.
+- **Grade on the evidence ladder.** Use the 7-rung ladder in the playbook, with its mandatory "does not tell you" column, instead of bare High, Med and Low.
 - **Be adversarial about evidence.** Exclude vendor self-reported accuracy, marketing numbers, and refuted claims. Prefer independent benchmarks, primary sources, and reproducible results. When you exclude something, you can say so — that honesty builds trust.
-- **Keep a source ledger.** An appendix listing each non-trivial claim's source and your confidence. It makes the doc auditable.
+- **Keep a source ledger.** An appendix listing each non-trivial claim's source, its evidence-ladder rung and its verification status. It makes the doc auditable.
 - **Separate fact from proposal.** Mark anything you're proposing rather than observing.
 
 See `references/research-playbook.md` for the subagent prompt templates, the adversarial checklist, and the source-ledger format.
@@ -116,10 +118,14 @@ It extracts every ` ```mermaid ` block, renders each with mermaid-cli, and repor
 
 Write the deliverable where the user keeps their work (infer from the reference material's folder; default to the current working directory). Name it `<Topic>_Technical_Design.md` (e.g. `Lease_Abstraction_Agent_Technical_Design.md`). Keep it as one combined doc unless the user asks to split out a companion patterns doc.
 
+## House style
+
+If the user has saved prose rules in memory or CLAUDE.md (for example banned punctuation, or required labels such as Judgement and Illustration), apply them to the deliverable and to every subagent prompt. Grep the final doc for any banned characters before handing it over.
+
 ## Reference files
 
 - `references/document-skeleton.md` — the full combined section skeleton with inline guidance and the AI-mode sections.
-- `references/research-playbook.md` — parallel-subagent prompt templates, the adversarial-evidence checklist, SOTA-refresh method, source-ledger format.
+- `references/research-playbook.md` — parallel-subagent prompt templates, the adversarial-evidence checklist, opened-page verification, the 7-rung evidence ladder, source-ledger format (table and JSON), the Workflow variant and the SOTA-refresh method.
 - `references/personas.md` — the default persona panel and how to adapt it per topic.
 - `references/design-patterns.md` — the agent design-pattern catalog (A–G), comparison-matrix dimensions, decision-tree and composite guidance, anti-patterns.
 - `references/mermaid-cookbook.md` — Mermaid conventions, the color legend, diagram catalog, and render-validation workflow.

@@ -27,6 +27,7 @@ Swap personas so the panel covers the axes that actually matter for the design:
 - **Integration / API** → integration architect (contracts, versioning), reliability lead (idempotency, retries, backpressure), security lead (authn/z, secrets), consumer DX advocate.
 - **Migration / modernization** → migration architect (sequencing, cutover, rollback), risk owner (blast radius, dual-run), product owner (feature parity, downtime tolerance), cost owner.
 - **Distributed system** → systems architect (consistency model, partitioning), SRE (failure modes, observability), security lead, capacity/cost lead.
+- **Payments / fintech** → payments architect (rails, settlement finality, idempotency, reconciliation), fraud and risk lead (authorized push payment fraud, bank-detail change, sanctions screening), compliance lead (PSD3/PSR, Reg E, the Consumer Duty, AML and KYC, who carries liability), treasury or finance ops owner (cash timing, FX, exception queues), plus the security lead. Pick the regimes for the client's jurisdiction and merge roles to stay within 4 to 6 personas. For agentic payments add a mandate and identity owner, who covers how the agent proves it acts for someone and what the user authorized.
 
 If a topic has a dominant regulatory or financial dimension (e.g., ASC 842/IFRS 16 for leases, PCI for payments), add a persona who owns that — they keep the design tethered to the rules that can sink it.
 

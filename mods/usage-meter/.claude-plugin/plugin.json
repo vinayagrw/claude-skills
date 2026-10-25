@@ -1,6 +1,6 @@
 {
   "name": "usage-meter",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A line above the prompt showing context fill, limit windows, session cost and prompt-cache state, with warnings before limits.",
   "types": "./types/index.d.ts"
 }

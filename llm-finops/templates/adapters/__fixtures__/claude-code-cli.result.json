@@ -1,0 +1,85 @@
+{
+  "_comment": [
+    "RECORDED terminal result payloads from `claude -p --output-format json`, 2026-07-19,",
+    "Windows 11. Result text is truncated; the usage block is verbatim.",
+    "Two properties matter here and both are asserted by the test:",
+    "  1. input_tokens ALREADY EXCLUDES cache_read_input_tokens and cache_creation_input_tokens.",
+    "     Subtracting cache reads (as you must on Gemini and OpenAI) would understate input.",
+    "  2. total_cost_usd is NOTIONAL under a subscription. It maps to notionalCostUsd with",
+    "     billable:false and costUsd:0 — never to costUsd, and never dropped."
+  ],
+  "recorded": "2026-07-19",
+  "cases": [
+    {
+      "name": "cold session, no cache",
+      "payload": {
+        "type": "result",
+        "subtype": "success",
+        "is_error": false,
+        "result": "<text elided>",
+        "session_id": "1f0a...elided",
+        "num_turns": 1,
+        "duration_ms": 7412,
+        "total_cost_usd": 0.0413,
+        "modelUsage": { "claude-sonnet-4-6-20260210": {} },
+        "usage": {
+          "input_tokens": 4,
+          "output_tokens": 286,
+          "cache_read_input_tokens": 0,
+          "cache_creation_input_tokens": 13820
+        }
+      },
+      "expect": {
+        "inputTokens": 4,
+        "outputTokens": 286,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 13820,
+        "reasoningTokens": null,
+        "reasoningInOutput": "nested",
+        "billable": false,
+        "notionalCostUsd": 0.0413,
+        "servedModel": "claude-sonnet-4-6-20260210",
+        "_note": "input_tokens is 4, not 13824. The prefix is accounted for entirely under cache_creation. A cold session's tiny input_tokens is the signature of a cache WRITE, not of a small prompt."
+      }
+    },
+    {
+      "name": "warm session, cache hit — the shape you want to see",
+      "payload": {
+        "type": "result",
+        "subtype": "success",
+        "is_error": false,
+        "result": "<text elided>",
+        "session_id": "1f0a...elided",
+        "num_turns": 1,
+        "duration_ms": 5108,
+        "total_cost_usd": 0.0091,
+        "modelUsage": { "claude-sonnet-4-6-20260210": {} },
+        "usage": {
+          "input_tokens": 6,
+          "output_tokens": 341,
+          "cache_read_input_tokens": 13820,
+          "cache_creation_input_tokens": 0
+        }
+      },
+      "expect": {
+        "inputTokens": 6,
+        "outputTokens": 341,
+        "cacheReadTokens": 13820,
+        "cacheWriteTokens": 0,
+        "reasoningTokens": null,
+        "billable": false,
+        "notionalCostUsd": 0.0091,
+        "_note": "Cache reads dominating input is the target steady state. A cache-read ratio that collapses mid-session means a prefix changed — a tool definition, the project context file, or a model switch."
+      }
+    },
+    {
+      "name": "spawn failure — the PATH hazard, recorded for the test",
+      "spawnError": { "code": "ENOENT", "syscall": "spawn claude.cmd" },
+      "expect": {
+        "reason": "spawn-failed",
+        "usage": null,
+        "_note": "This is the failure that looks like health. The chain serves a deterministic response successfully, nothing errors, and the app stops using AI without telling anyone. probe() at startup is what converts this into a reported fact."
+      }
+    }
+  ]
+}

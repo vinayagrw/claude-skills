@@ -33,6 +33,26 @@
       "name": "token-insights",
       "source": "./token-insights",
       "description": "/insights token report for today, week, month or a date range"
+    },
+    {
+      "name": "loop-watch",
+      "source": "./loop-watch",
+      "description": "Warns when a project keeps starting sessions on its own"
+    },
+    {
+      "name": "house-style",
+      "source": "./house-style",
+      "description": "Your standing style rules in every session; em-dashes caught before writing"
+    },
+    {
+      "name": "time-machine",
+      "source": "./time-machine",
+      "description": "/rewind: timeline of Claude's file edits by turn, with diff and restore"
+    },
+    {
+      "name": "flightdeck",
+      "source": "./flightdeck",
+      "description": "/flightdeck: live pane of context, limits, cost, tools and subagents"
     }
   ],
   "description": "Vinay's personal Claude Code mods"

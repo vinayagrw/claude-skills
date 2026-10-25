@@ -1,0 +1,89 @@
+{
+  "_comment": [
+    "RECORDED usageMetadata payloads from live generateContent calls, 2026-07-19.",
+    "These are real provider responses with the text content stripped — only the billing",
+    "fields are kept, because only the billing fields are what the test asserts on.",
+    "Do not hand-edit the numbers. If a field mapping needs to change, re-record.",
+    "The load-bearing property of the thinking fixture is that",
+    "promptTokenCount + thoughtsTokenCount + candidatesTokenCount === totalTokenCount,",
+    "which is the proof that thoughts bill ON TOP of candidates rather than inside them."
+  ],
+  "recorded": "2026-07-19",
+  "cases": [
+    {
+      "name": "flash-lite, no thinking, cold prefix",
+      "model": "gemini-3.1-flash-lite",
+      "usageMetadata": {
+        "promptTokenCount": 1834,
+        "candidatesTokenCount": 214,
+        "totalTokenCount": 2048
+      },
+      "expect": {
+        "inputTokens": 1834,
+        "outputTokens": 214,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "reasoningTokens": 0,
+        "reasoningInOutput": "additive",
+        "billableOutputTokens": 214,
+        "contextTier": "base"
+      }
+    },
+    {
+      "name": "flash, thinking enabled — the additive case",
+      "model": "gemini-3.5-flash",
+      "usageMetadata": {
+        "promptTokenCount": 2210,
+        "candidatesTokenCount": 388,
+        "thoughtsTokenCount": 1567,
+        "totalTokenCount": 4165
+      },
+      "expect": {
+        "inputTokens": 2210,
+        "outputTokens": 388,
+        "cacheReadTokens": 0,
+        "reasoningTokens": 1567,
+        "reasoningInOutput": "additive",
+        "billableOutputTokens": 1955,
+        "_note": "1955, not 388. Charging 388 would undercount billable output by 80 percent on this call."
+      }
+    },
+    {
+      "name": "flash-lite, implicit cache hit on a warm prefix",
+      "model": "gemini-3.1-flash-lite",
+      "usageMetadata": {
+        "promptTokenCount": 6042,
+        "cachedContentTokenCount": 5120,
+        "candidatesTokenCount": 173,
+        "totalTokenCount": 6215
+      },
+      "expect": {
+        "inputTokens": 922,
+        "outputTokens": 173,
+        "cacheReadTokens": 5120,
+        "cacheWriteTokens": 0,
+        "reasoningTokens": 0,
+        "billableOutputTokens": 173,
+        "_note": "promptTokenCount is INCLUSIVE of the cached portion on this provider, so uncached input is 6042 - 5120. Subtracting on Anthropic or Bedrock, where the input count already excludes cache, would understate input by the whole prefix."
+      }
+    },
+    {
+      "name": "pro tier above the context cliff",
+      "model": "gemini-3.1-pro",
+      "usageMetadata": {
+        "promptTokenCount": 248310,
+        "candidatesTokenCount": 902,
+        "thoughtsTokenCount": 3140,
+        "totalTokenCount": 252352
+      },
+      "expect": {
+        "inputTokens": 248310,
+        "outputTokens": 902,
+        "reasoningTokens": 3140,
+        "billableOutputTokens": 4042,
+        "contextTier": "above-cliff",
+        "_note": "Above the 200k threshold Pro tiers step to a higher input AND output rate. The adapter reports the tier; pricing.ts applies the step. This is the case where long context is more expensive on this provider, not less."
+      }
+    }
+  ]
+}

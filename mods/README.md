@@ -2,10 +2,11 @@
 
 # 🧩 Claude Code Mods
 
-**Six small plugins that change Claude Code itself:** usage at a glance, suggested next steps
-after each reply, a guard against cold-cache costs and a token report.
+**Ten small plugins that change Claude Code itself:** usage at a glance, suggested next steps
+after each reply, a guard against cold-cache costs, a token report, a live cost pane,
+file rewind, a loop alarm and your house style in every session.
 
-![Mods](https://img.shields.io/badge/mods-6-e8590c?style=flat-square)
+![Mods](https://img.shields.io/badge/mods-10-e8590c?style=flat-square)
 ![Marketplace](https://img.shields.io/badge/marketplace-my--mods-1971c2?style=flat-square)
 
 </div>
@@ -17,7 +18,7 @@ after each reply, a guard against cold-cache costs and a token report.
 A mod is a Claude Code plugin with a hooks module. It listens to app events such as
 `turn.complete` or `prompt.submit` and can draw a band above the prompt, show a toast, add a
 slash command or change a prompt before it is sent. This folder is a ready marketplace named
-`my-mods`, so you can install all six mods at once.
+`my-mods`, so you can install all ten mods at once.
 
 ```mermaid
 flowchart LR
@@ -37,6 +38,10 @@ flowchart LR
 | 🔍 **[context-lens](context-lens)** | Shows what fills the context window as bars, biggest first: skills, memory files, MCP tools and the largest tool results | `/lens` | `tool.call`, `command.run` | None |
 | 📈 **[token-insights](token-insights)** `v0.2.0` | A token report for any range: totals, daily bars, top projects and sessions, cache hit rate, cold restarts, compactions and cost by model, plus insights when they apply | `/insights [today\|week\|month\|Nd\|from..to]` | `command.run` | None. Reads local transcripts with `scripts/insights.py` |
 | ⛵ **[firstmate-calm](firstmate-calm)** | A quieter transcript. Hides finished tool rows and swaps the spinner word for a sailboat | `/calm` | `ui.render` | None |
+| 🛫 **[flightdeck](flightdeck)** | A live pane with context, limits, cost, cache, tool calls and subagents. Read only | `/flightdeck` | `session.measure`, `turn.complete`, `tool.call`, `agent.spawn`, `ui.render` | None, no model calls |
+| ✍️ **[house-style](house-style)** | Your standing style rules added to every session, and em-dashes caught before they are written | `/house-style` | `session.start`, `prompt.compose`, `tool.call`, `command.run` | None |
+| 🔁 **[loop-watch](loop-watch)** | Warns when a project keeps starting sessions on its own, such as a scheduled job or keep-alive loop burning tokens | `/loop-watch` | `session.start`, `command.run` | None |
+| ⏪ **[time-machine](time-machine)** | Snapshots each file before Claude edits it. `/rewind` shows a timeline by turn with diff and restore | `/rewind` | `tool.call`, `turn.complete`, `ui.render`, `command.run` | None, snapshots stay on your machine |
 
 ## Why these exist
 
@@ -72,7 +77,8 @@ claude plugin marketplace add ./mods
 claude plugin install usage-meter@my-mods --scope user
 ```
 
-Repeat for `next-step`, `cache-tax`, `context-lens`, `token-insights` and `firstmate-calm`.
+Repeat for `next-step`, `cache-tax`, `context-lens`, `token-insights`, `firstmate-calm`,
+`flightdeck`, `house-style`, `loop-watch` and `time-machine`.
 
 **4. Load them** by typing `/reload-plugins` in a running session, or start a new one.
 

@@ -80,7 +80,7 @@ The Strand-C content, sharpened against the now-drafted design. Date-stamped. Co
 Pre-sales / client-facing only. The differentiator and delivery angle. See `references/ciklum-framing.md`. Keep it earned, not boastful — tie each claim to something concrete in the design.
 
 ## Appendix A — Source ledger `[CORE]`
-Table: claim → source → confidence (high/med/low) → notes (e.g., "vendor self-reported, excluded from accuracy claims"). Makes the doc auditable and signals intellectual honesty.
+Table: # → claim → source → rung (1 to 7, per the evidence ladder in research-playbook.md) → verified (opened, supports yes/partial/no, date seen) → notes. Optional JSON form described in the playbook. Notes (e.g., "vendor self-reported, excluded from accuracy claims"). Makes the doc auditable and signals intellectual honesty.
 
 ---
 

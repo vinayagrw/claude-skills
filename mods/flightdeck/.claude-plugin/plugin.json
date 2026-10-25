@@ -1,0 +1,6 @@
+{
+  "name": "flightdeck",
+  "version": "0.1.0",
+  "description": "/flightdeck: a live pane of context, limits, cost, cache, tool calls and subagents. Read-only, no model calls.",
+  "types": "./types/index.d.ts"
+}

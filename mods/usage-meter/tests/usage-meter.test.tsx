@@ -148,3 +148,83 @@ test('the command hides and shows the band and prints the breakdown', async ($, 
   expect(await shown.find({ type: 'Text' })).toBeDefined()
   await shown.unmount()
 })
+
+test('subagent turns are counted per agent and leave the main cache line alone', async ($, on) => {
+  world(on)
+  await $.session.measure(measure(14))
+  await $.turn.complete(turn as never)
+  await $.turn.complete({ ...turn, agentId: 'abc123xyz', usage: { ...turn.usage, cache_read_input_tokens: 0, cache_creation_input_tokens: 40_000 } } as never)
+  await $.turn.complete({ ...turn, agentId: 'abc123xyz', usage: { ...turn.usage, cache_read_input_tokens: 0, cache_creation_input_tokens: 40_000 } } as never)
+
+  const ui = await $.ui.mount({ ...BAND, surface: 'terminal' } as never)
+  expect((await ui.find({ type: 'Text' }))?.text ?? '').toContain('agents 1 · 83k')
+  await ui.unmount()
+
+  const report = (await $.command.run({ command: 'usage-meter', args: '', origin: { kind: 'composer' } } as never)).text ?? ''
+  expect(report).toContain('90% of input served from the prompt cache')
+  expect(report).toContain('Subagents and workflows: 83k tokens, 45% of this session')
+  expect(report).toContain('agent abc123 · claude-opus-5-5: 83k in 2 turns, 0% cached, ctx 41k, ≈$0.67')
+})
+
+test('no subagents, no agents part', async ($, on) => {
+  world(on)
+  await $.session.measure(measure(14))
+  await $.turn.complete(turn as never)
+  const ui = await $.ui.mount({ ...BAND, surface: 'terminal' } as never)
+  expect((await ui.find({ type: 'Text' }))?.text ?? '').not.toContain('agents')
+  await ui.unmount()
+})
+
+test('tool results are tallied and a large one toasts', async ($, on) => {
+  const { toasts } = world(on)
+  on('tool.call', (_, e) => ({ result: (e as { tool: string }).tool === 'Read' ? 'x'.repeat(100_000) : 'ok' }) as never)
+  await $.tool.call({ tool: 'Read', file_path: 'big.md' } as never)
+  await $.tool.call({ tool: 'Bash', command: 'ls' } as never)
+  expect(toasts).toEqual([expect.stringContaining('Read returned about 25k tokens')])
+  const report = (await $.command.run({ command: 'usage-meter', args: '', origin: { kind: 'composer' } } as never)).text ?? ''
+  expect(report).toContain('Top tools by result size (estimated):\n  Read: 25k in 1 call')
+})
+
+test('model split, failed turns, slow turns and workflow runs are reported', async ($, on) => {
+  world(on)
+  on('agent.spawn', () => ({ agentId: 'w1', model: 'claude-haiku-5-5' }) as never)
+  await $.session.measure(measure(14))
+  await $.agent.spawn({ tool_use_id: 't', prompt: 'p', description: 'verify', subagentType: 'Explore', background: true, workflow: { runId: 'wf_abc', agentIndex: 1 } } as never)
+  await $.turn.complete({ ...turn, durationMs: 90_000 } as never)
+  await $.turn.complete({ ...turn, agentId: 'w1', reason: 'error', durationMs: 5_000, usage: { ...turn.usage, model: 'claude-haiku-5-5' } } as never)
+  const report = (await $.command.run({ command: 'usage-meter', args: '', origin: { kind: 'composer' } } as never)).text ?? ''
+  expect(report).toContain('workflow wf_abc: 1 agent, 101k')
+  expect(report).toContain('claude-opus-5-5: 101k in 1 turn')
+  expect(report).toContain('claude-haiku-5-5: 101k in 1 turn')
+  expect(report).toContain('Failed or aborted turns: 1, 101k tokens')
+  expect(report).toContain('Slowest turns:\n  2m · Main chat · 101k\n  5s · verify · 101k')
+})
+
+test('agent rows show estimated cost and their latest context', async ($, on) => {
+  world(on)
+  await $.session.measure(measure(14))
+  const small = { ...turn.usage, model: 'claude-haiku-5-5', input_tokens: 0, cache_read_input_tokens: 0, cache_creation_input_tokens: 2_000_000, output_tokens: 0 }
+  await $.turn.complete({ ...turn, agentId: 'h1', usage: { ...small, cache_creation_input_tokens: 1_000_000 } } as never)
+  await $.turn.complete({ ...turn, agentId: 'h1', usage: small } as never)
+  await $.turn.complete({ ...turn, agentId: 'x1', usage: { ...turn.usage, model: 'other-model' } } as never)
+  const report = (await $.command.run({ command: 'usage-meter', args: '', origin: { kind: 'composer' } } as never)).text ?? ''
+  expect(report).toContain('ctx 2M, ≈$3.00')
+  expect(report).toContain('price unknown')
+  expect(report).toContain('vs $4.20 session total (incl. agents)')
+})
+
+test('prices strip region and date suffixes, and long Haiku prompts cost more', async ($, on) => {
+  world(on)
+  const u = { input_tokens: 1_000_000, output_tokens: 0, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 }
+  const run = async (id: string, model: string, usage = u) =>
+    $.turn.complete({ ...turn, agentId: id, usage: { ...usage, model } } as never)
+  await run('a', 'us.anthropic.claude-opus-5-5')
+  await run('b', 'claude-haiku-4-5-20251001')
+  await run('c', 'claude-haiku-5-5')
+  await run('d', 'claude-haiku-5-5', { ...u, input_tokens: 50_000 })
+  const report = (await $.command.run({ command: 'usage-meter', args: '', origin: { kind: 'composer' } } as never)).text ?? ''
+  expect(report).toContain('agent a · us.anthropic.claude-opus-5-5: 1M in 1 turn, 0% cached, ctx 1M, ≈$4.00')
+  expect(report).toContain('agent b · claude-haiku-4-5-20251001: 1M in 1 turn, 0% cached, ctx 1M, ≈$1.00')
+  expect(report).toContain('agent c · claude-haiku-5-5: 1M in 1 turn, 0% cached, ctx 1M, ≈$0.50')
+  expect(report).toContain('agent d · claude-haiku-5-5: 50k in 1 turn, 0% cached, ctx 50k, ≈$0.01')
+})

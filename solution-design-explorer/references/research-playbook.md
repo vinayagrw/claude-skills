@@ -6,7 +6,7 @@ The research is what makes the deliverable credible instead of plausible. Two pa
 
 Each research strand is independent — how-the-community-does-it doesn't depend on the SOTA-refresh. Running them as separate `Agent` calls in a single message means they execute concurrently, each burns its own context (not yours), and you receive distilled briefs back. Spawn them all in one turn; don't fire one, wait, then fire the next.
 
-A lesson learned the hard way: **don't force subagents to return a rigid JSON schema.** Structured-output schemas have failed repeatedly here ("subagent completed without calling StructuredOutput"). Ask for a **markdown brief** instead — headed sections, bullet findings, inline source citations, an explicit confidence note. Free-form is far more robust and just as usable.
+A lesson learned the hard way: **don't force plain `Agent` subagents to return a rigid JSON schema.** Structured output has failed repeatedly there ("subagent completed without calling StructuredOutput"). Ask those agents for a **markdown brief**: headed sections, bullet findings, inline source citations and an explicit confidence note. Free-form is more robust and just as usable. The exception is the Workflow tool (see "Workflow variant" below). Its `schema` option is enforced at the tool-call layer and is reliable, so use it there.
 
 ## Pass 1 — initial survey (run concurrently)
 
@@ -34,15 +34,59 @@ Apply to every non-trivial claim before it enters the doc:
 
 Being visibly willing to exclude weak evidence is a credibility *gain*, not a gap. Say what you threw out and why.
 
+## Opened-page verification
+
+"Cite sources" is not enough. Agents cite pages they never opened, misread them, or quote a secondary summary as if it were the primary. Before a claim with a number, a named regulator, a date or a named company enters the doc:
+
+1. A **separate verifier** (not the agent that found it) opens the URL itself and is told to default to "does not support" when in doubt.
+2. It records `verify_page_opened` (true or false), `verify_supports` (yes, partial, no or unreachable), `verify_date_seen` (the date shown on the page) and a one-line `verify_note`.
+3. If the source is secondary, the verifier tries to open the primary (the ruling, the filing, the spec, the speech) and says whether it managed to.
+4. **Default path (no Workflow):** after Pass 1 returns, spawn verifier subagents in parallel, one per strand or per batch of about 10 claims. Each returns a markdown table with the four verify_* columns, not JSON.
+5. A claim whose page was never opened is capped at rung 7. A `no` is dropped, and you say so in the ledger notes.
+
+## Evidence ladder
+
+Grade every claim on one ladder, so grades mean the same thing across deliverables. "Does not tell you" is mandatory. It stops a true number from being read as a bigger claim.
+
+| Rung | Tier | Does not tell you |
+|---|---|---|
+| 1 | Audited or independently reproduced result | Whether it transfers to your context |
+| 2 | Primary record: regulation, ruling, filing, spec, contract | Whether anyone complies, adopts or performs |
+| 3 | Revealed behavior: disclosed volume, retention, on-chain or scheme data | Why, or whether it pays off |
+| 4 | Deployment scale or live status | Unit economics or quality |
+| 5 | Independent survey or credible secondary reporting | Behavior. Sentiment only |
+| 6 | Stated intent or self-report | Behavior, and certainly not money |
+| 7 | Projection, award, vendor claim, unopened page | Anything |
+
+Apply the ladder to your own best number too. Saying your headline figure sits on rung 3 is the test that the discipline is real.
+
 ## Source ledger (Appendix A)
 
-Maintain a running table as you research; emit it as the appendix:
+Maintain a running table as you research. Emit it as the appendix:
 
-| # | Claim (short) | Source | Confidence | Notes |
-|---|---|---|---|---|
-| 1 | <one line> | <link / paper / vendor> | High/Med/Low | e.g. "vendor self-reported — excluded from accuracy claims" |
+| # | Claim (short) | Source | Rung | Verified | Notes |
+|---|---|---|---|---|---|
+| 1 | <one line> | <link> | 1 to 7 | opened, supports yes, <YYYY-MM-DD> | e.g. "vendor self-reported, kept out of headlines" |
 
-High = independent/primary + reproducible. Med = single credible source. Low = inference, contested, or vendor-only.
+**Machine-readable option.** When the findings will feed later work (pages, other designs, a running claims ledger), also write the ledger as a JSON array, one object per claim, with these fields: `id`, `claim`, `number`, `unit`, `event_date`, `publish_date`, `url`, `quote` (verbatim, under 15 words), `source_tier` (primary, secondary or vendor), `kind` (fact, projection, vendor_claim or opinion), `rung`, `confidence` (the verifier's certainty that the page supports the claim, separate from `rung`, which grades the type of evidence), `verify_page_opened`, `verify_supports`, `verify_date_seen`, `verify_note`. If the user already keeps a ledger, match its schema and append rather than starting a new file, and back it up first.
+
+## Workflow variant
+
+Use this only when the user has opted into multi-agent orchestration ("use a workflow", ultracode, or a direct ask). It runs Step 1 and the verification above as one orchestrated pipeline. This is a sketch, adapt it to the Workflow tool's API. `CLAIMS` is a schema for an array of objects with the research-side ledger fields (claim, number, unit, event_date, publish_date, url, quote, source_tier, kind). `VERDICT` is the four verify_* fields plus `rung` and `confidence`. If the Workflow tool is unavailable, use the default path above.
+
+```js
+// strands -> per-claim adversarial verify, with no barrier between them -> synthesis -> completeness critic
+const rows = (await pipeline(STRANDS,
+  s => agent(s.prompt + RULES, { phase: 'Research', schema: CLAIMS }),
+  (r, s) => parallel(r.claims.map(c => () =>
+    agent(verifyPrompt(c), { phase: 'Verify', schema: VERDICT, effort: 'low' })
+      .then(v => ({ ...c, strand: s.key, ...v }))))
+)).flat().filter(Boolean)
+const brief = await agent(synthPrompt(rows), { phase: 'Synthesize' })
+const gaps  = await agent(`What is missing from this brief? Strand not run, claim unverified, primary unopened? ${brief}`)
+```
+
+Put the house rules in `RULES`: real opened URLs only, short verbatim quotes, ISO dates, vendor figures tagged, never invent a source, person or quote. Feed what the critic finds into Pass 2.
 
 ## SOTA-refresh method (the differentiator)
 

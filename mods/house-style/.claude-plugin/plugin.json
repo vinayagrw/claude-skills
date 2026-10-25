@@ -1,0 +1,6 @@
+{
+  "name": "house-style",
+  "version": "0.2.1",
+  "description": "Your standing style rules in every session, and em-dashes caught before they are written.",
+  "types": "./types/index.d.ts"
+}
